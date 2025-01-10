@@ -8,4 +8,5 @@ export const colors = {
   blackHighlight: '#3f3f3f',
   fullBlack: '#000',
   white: '#fdfdfd',
+  error: '#c1121f'
 }

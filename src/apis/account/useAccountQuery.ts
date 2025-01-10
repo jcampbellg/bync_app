@@ -9,7 +9,7 @@ export type AccountsGetData = {
 type QueryProps = Omit<UseQueryOptions<AccountsGetData>, 'queryKey' | 'queryFn'>
 
 export default function useAccountQuery(props: QueryProps = {}) {
-  const { key, baseUrl, isLogin, setState } = useApp()
+  const { key, baseUrl, isLogin } = useApp()
 
   const query = useQuery({
     queryKey: ['account'],
@@ -26,7 +26,7 @@ export default function useAccountQuery(props: QueryProps = {}) {
 
       if (!response.ok) {
         const error = await response.json()
-        console.error(error)
+        console.error(`error in useAccountQuery: ${error}`)
         return Promise.resolve([])
       }
       const data = await response.json()

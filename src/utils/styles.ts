@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet } from 'react-native'
 import { colors } from './constants'
 
-const { width, height } = Dimensions.get('window')
+const { width } = Dimensions.get('window')
 
 const styles = StyleSheet.create({
   paginationStyleCurrencyItem: {
@@ -95,29 +95,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#000',
     fontWeight: 'bold',
+    fontFamily: 'Roboto'
   },
   titleWhite: {
     fontSize: 24,
     fontWeight: 'bold',
     marginTop: 20,
-    color: colors.white
+    color: colors.white,
+    fontFamily: 'Roboto'
   },
   subtitleWhite: {
     fontSize: 14,
     color: colors.white,
     opacity: 0.8,
+    fontFamily: 'Roboto'
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginVertical: 20,
+    fontFamily: 'Roboto'
   },
   subtitle: {
     fontSize: 14,
     color: colors.black,
     opacity: 0.8,
+    fontFamily: 'Roboto'
   },
   input: {
+    fontFamily: 'Roboto',
     width: '100%',
     height: 50,
     color: colors.black,
@@ -135,7 +141,7 @@ const styles = StyleSheet.create({
     }
   },
   button: {
-    width: '90%',
+    width: '100%',
     height: 50,
     backgroundColor: colors.black,
     justifyContent: 'center',
@@ -147,6 +153,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 16,
     fontWeight: 'bold',
+    fontFamily: 'Roboto'
   }
 })
 

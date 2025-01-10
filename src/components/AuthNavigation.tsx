@@ -12,21 +12,35 @@ import KeyboardView from './KeyboardView'
 
 export default function AuthNavigation() {
   const { data } = useAccountQuery()
+
   const [accountIndex, setAIndex] = useState(0)
   const [currencyIndex, setCIndex] = useState(0)
 
   const balances = accountIndex === 0 ? [] : data?.accounts[accountIndex - 1].balances || []
 
+  const dataScroll = [{
+    id: 0,
+    accountId: 0,
+    currency: '',
+    amount: 0,
+    createdAt: '',
+    updatedAt: '',
+    balances: []
+  }, ...data?.accounts || []]
+
   return (
     <View style={styles.containerWhite}>
       <View style={[styles.headerAccounts, { marginBottom: accountIndex === 0 ? 40 : 0 }]}>
-        <SwiperFlatList showPagination paginationStyleItem={styles.paginationStyleCardItem} paginationActiveColor={colors.white} paginationDefaultColor={colors.gray.loading} index={accountIndex} onChangeIndex={({ index }) => { setAIndex(index); setCIndex(0) }}>
-          <NewAccountCard />
-          {
-            data?.accounts.map((account) => (
-              <AccountCard key={account.id} {...account} />
-            ))
-          }
+        <SwiperFlatList showPagination={!!data?.accounts.length} paginationStyleItem={styles.paginationStyleCardItem} paginationActiveColor={colors.white} paginationDefaultColor={colors.gray.loading} index={accountIndex} onChangeIndex={({ index }) => { setAIndex(index); setCIndex(0) }}
+          data={dataScroll}
+          renderItem={({ item, index }) => {
+            if (index === 0) {
+              return <NewAccountCard />
+            }
+
+            return <AccountCard {...item} />
+          }}
+        >
         </SwiperFlatList>
       </View>
       {
@@ -51,7 +65,7 @@ export default function AuthNavigation() {
       <View style={styles.bodyAccounts}>
         <KeyboardView>
           {
-            accountIndex === 0 ? <NewAccountScreen /> : <AccountScreen />
+            accountIndex === 0 ? <NewAccountScreen key='asdas' /> : <AccountScreen />
           }
         </KeyboardView>
       </View>
