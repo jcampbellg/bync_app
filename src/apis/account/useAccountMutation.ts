@@ -17,6 +17,7 @@ export default function useAccountMutation({ onSuccess, ...props }: QueryProps =
     mutationFn: async (params: NewAccountForm) => {
       const url = baseUrl + '/api/account'
 
+      console.log('url', url, key)
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -31,6 +32,7 @@ export default function useAccountMutation({ onSuccess, ...props }: QueryProps =
         console.error(`error in useAccountMutation: ${error}`)
         return Promise.reject(error)
       }
+      console.log('response', 'hi')
       const data = await response.json()
       return data
     },

@@ -1,8 +1,7 @@
 import EncryptedStorage from 'react-native-encrypted-storage'
 import { useShallowEffect } from '@mantine/hooks'
-import { View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import { createContext, Dispatch, useContext, useReducer } from 'react'
-import SpinIcon from '../components/ui/SpinIcon'
 import { colors } from '../utils/constants'
 
 const initialValue = {
@@ -18,6 +17,7 @@ type State = typeof initialValue
 type RootContext = State & {
   setState: Dispatch<Partial<State>>
   login: (baseUrl: string, key: string) => void
+  logout: () => void
 }
 
 const Context = createContext<undefined | RootContext>(undefined)
@@ -76,20 +76,28 @@ export default function Root({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const logout = async () => {
+    setState({
+      baseUrl: null,
+      key: null,
+      isLogin: false
+    })
+  }
+
   useShallowEffect(() => {
     loadUserOnStart()
   }, [{ a: 1 }])
 
   if (state.isLoading) {
     return (
-      <View>
-        <SpinIcon name='spinner' size={30} color={colors.gray.loading} />
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.white }}>
+        <ActivityIndicator size='large' color={colors.black} />
       </View>
     )
   }
 
   return (
-    <Context.Provider value={{ ...state, setState, login }}>
+    <Context.Provider value={{ ...state, setState, login, logout }}>
       {children}
     </Context.Provider>
   )

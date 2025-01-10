@@ -1,74 +1,67 @@
-import useAccountQuery from '../apis/account/useAccountQuery'
-import NewAccountCard from './cards/NewAccountCard'
-import AccountCard from './cards/AccountCard'
-import { Text, View } from 'react-native'
-import styles from '../utils/styles'
+import { NavigationContainer } from '@react-navigation/native'
+import AccountsScreen from '../screens/AccountsScreen'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import FaIcon from 'react-native-vector-icons/FontAwesome5'
 import { colors } from '../utils/constants'
-import { useState } from 'react'
-import { SwiperFlatList } from 'react-native-swiper-flatlist'
-import NewAccountScreen from '../screens/NewAccountScreen'
-import AccountScreen from '../screens/AccountScreen'
-import KeyboardView from './KeyboardView'
+import { useApp } from '../screens/Root'
+
+const Tab = createBottomTabNavigator()
+
+export type TabStackParamList = {
+  Accounts: undefined
+  Groups: undefined
+  Categories: undefined
+  Exit: undefined
+}
 
 export default function AuthNavigation() {
-  const { data } = useAccountQuery()
-
-  const [accountIndex, setAIndex] = useState(0)
-  const [currencyIndex, setCIndex] = useState(0)
-
-  const balances = accountIndex === 0 ? [] : data?.accounts[accountIndex - 1].balances || []
-
-  const dataScroll = [{
-    id: 0,
-    accountId: 0,
-    currency: '',
-    amount: 0,
-    createdAt: '',
-    updatedAt: '',
-    balances: []
-  }, ...data?.accounts || []]
-
+  const { logout } = useApp()
   return (
-    <View style={styles.containerWhite}>
-      <View style={[styles.headerAccounts, { marginBottom: accountIndex === 0 ? 40 : 0 }]}>
-        <SwiperFlatList showPagination={!!data?.accounts.length} paginationStyleItem={styles.paginationStyleCardItem} paginationActiveColor={colors.white} paginationDefaultColor={colors.gray.loading} index={accountIndex} onChangeIndex={({ index }) => { setAIndex(index); setCIndex(0) }}
-          data={dataScroll}
-          renderItem={({ item, index }) => {
-            if (index === 0) {
-              return <NewAccountCard />
-            }
-
-            return <AccountCard {...item} />
+    <NavigationContainer>
+      <Tab.Navigator screenOptions={{ headerShown: false, tabBarShowLabel: false, tabBarIconStyle: { marginBottom: 0, paddingBottom: 0, paddingTop: 10, height: 46 }, tabBarActiveTintColor: colors.white, tabBarInactiveBackgroundColor: colors.black, tabBarActiveBackgroundColor: colors.black, tabBarInactiveTintColor: colors.gray.loading }}>
+        <Tab.Screen
+          name='Accounts'
+          component={AccountsScreen}
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <FaIcon name='credit-card' color={color} size={focused ? size : size * 0.8} />
+            )
           }}
-        >
-        </SwiperFlatList>
-      </View>
-      {
-        accountIndex !== 0 && (
-          <>
-            <Text style={[styles.subtitle, { textAlign: 'center', fontWeight: 'bold', marginVertical: 10 }]}>Balance</Text>
-            <View style={[styles.headerAccounts]}>
-              <SwiperFlatList showPagination paginationStyle={{ position: 'relative' }} paginationStyleItem={styles.paginationStyleCurrencyItem} paginationActiveColor={colors.black} paginationDefaultColor={colors.gray.medium} index={currencyIndex} onChangeIndex={({ index }) => setCIndex(index)}>
-                {
-                  balances.map((balance) => (
-                    <View key={`balance.${balance.id}`} style={styles.balance}>
-                      <Text style={styles.bigNumber}>{balance.amount}</Text>
-                      <Text style={styles.subtitle}>{balance.currency}</Text>
-                    </View>
-                  ))
-                }
-              </SwiperFlatList>
-            </View>
-          </>
-        )
-      }
-      <View style={styles.bodyAccounts}>
-        <KeyboardView>
-          {
-            accountIndex === 0 ? <NewAccountScreen key='asdas' /> : <AccountScreen />
-          }
-        </KeyboardView>
-      </View>
-    </View>
+        />
+        <Tab.Screen
+          name='Groups'
+          component={AccountsScreen}
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <FaIcon name='folder-open' color={color} size={focused ? size : size * 0.8} />
+            )
+          }}
+        />
+        <Tab.Screen
+          name='Categories'
+          component={AccountsScreen}
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <FaIcon name='bookmark' color={color} size={focused ? size : size * 0.8} />
+            )
+          }}
+        />
+        <Tab.Screen
+          name='Exit'
+          component={AccountsScreen}
+          listeners={() => ({
+            tabPress: (e) => {
+              e.preventDefault()
+              logout()
+            }
+          })}
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <FaIcon name='sign-out-alt' color={colors.error} size={focused ? size : size * 0.8} />
+            )
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
   )
 }

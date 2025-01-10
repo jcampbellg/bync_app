@@ -13,6 +13,7 @@
     "@expo-google-fonts/inter": "^0.2.3",
     "@hookform/resolvers": "^3.10.0",
     "@mantine/hooks": "^7.15.3",
+    "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/native-stack": "^7.2.0",
     "@react-navigation/stack": "^7.1.1",
@@ -28,13 +29,8 @@
     "react-native-gesture-handler": "^2.21.2",
     "react-native-linear-gradient": "^2.8.3",
     "react-native-safe-area-context": "^5.1.0",
-    "react-native-screens": "^4.5.0",
-    "react-native-screens-swiper": "^1.2.6",
-    "react-native-swipe-navigation": "^1.0.0-beta",
-    "react-native-swiper": "^1.6.0",
     "react-native-swiper-flatlist": "^3.2.5",
     "react-native-vector-icons": "^10.2.0",
-    "uniqolor": "^1.1.1",
     "zod": "^3.24.1"
   },
   "devDependencies": {
