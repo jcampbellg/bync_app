@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { SwiperFlatList } from 'react-native-swiper-flatlist'
 import NewAccountScreen from '../screens/NewAccountScreen'
 import AccountScreen from '../screens/AccountScreen'
+import KeyboardView from './KeyboardView'
 
 export default function AuthNavigation() {
   const { data } = useAccountQuery()
@@ -47,9 +48,13 @@ export default function AuthNavigation() {
           </>
         )
       }
-      {
-        accountIndex === 0 ? <NewAccountScreen /> : <AccountScreen />
-      }
+      <View style={styles.bodyAccounts}>
+        <KeyboardView>
+          {
+            accountIndex === 0 ? <NewAccountScreen /> : <AccountScreen />
+          }
+        </KeyboardView>
+      </View>
     </View>
   )
 }

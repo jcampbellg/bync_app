@@ -1,6 +1,6 @@
 import EncryptedStorage from 'react-native-encrypted-storage'
 import { useShallowEffect } from '@mantine/hooks'
-import { Keyboard, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback, View } from 'react-native'
+import { View } from 'react-native'
 import { createContext, Dispatch, useContext, useReducer } from 'react'
 import SpinIcon from '../components/ui/SpinIcon'
 import { colors } from '../utils/constants'
@@ -88,17 +88,9 @@ export default function Root({ children }: { children: React.ReactNode }) {
     )
   }
 
-  const dismissKeyboard = () => Keyboard.dismiss()
-
   return (
     <Context.Provider value={{ ...state, setState, login }}>
-      <KeyboardAvoidingView style={{ flex: 1 }}>
-        <TouchableWithoutFeedback style={{ flex: 1 }} onPress={dismissKeyboard}>
-          <ScrollView style={{ flex: 1 }}>
-            {children}
-          </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+      {children}
     </Context.Provider>
   )
 }

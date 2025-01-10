@@ -1,10 +1,13 @@
-import { Text, TextInput, View } from 'react-native'
-import styles from '../utils/styles'
+import { Text, View } from 'react-native'
 
 export default function AccountScreen() {
   return (
-    <View style={styles.bodyAccounts}>
-
-    </View>
+    <>
+      <View>
+        <Text>
+          Hola
+        </Text>
+      </View>
+    </>
   )
 }

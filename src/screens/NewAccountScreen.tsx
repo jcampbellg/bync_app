@@ -3,7 +3,7 @@ import styles from '../utils/styles'
 
 export default function NewAccountScreen() {
   return (
-    <View style={styles.bodyAccounts}>
+    <>
       <Text style={styles.label}>Description</Text>
       <TextInput
         style={styles.input}
@@ -33,6 +33,6 @@ export default function NewAccountScreen() {
         placeholderTextColor='#888'
         keyboardType='number-pad'
       />
-    </View>
+    </>
   )
 }
