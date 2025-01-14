@@ -85,6 +85,18 @@ export const sContainer = StyleSheet.create({
 })
 
 export const sButton = StyleSheet.create({
+  pill: {
+    paddingHorizontal: 8,
+    backgroundColor: colors.gray.loading,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+  },
+  pillText: {
+    fontSize: 14,
+    color: colors.white,
+    fontFamily: 'Roboto',
+  },
   filltext: {
     color: colors.white,
     fontSize: 16,
@@ -172,6 +184,12 @@ export const sText = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.black
   },
+  error: {
+    fontSize: 14,
+    color: colors.error,
+    opacity: 0.7,
+    fontFamily: 'Roboto',
+  },
 })
 
 export const sInput = StyleSheet.create({
@@ -207,6 +225,9 @@ export const sInput = StyleSheet.create({
 })
 
 export const spacing = StyleSheet.create({
+  mt10: {
+    marginTop: 10
+  },
   mt20: {
     marginTop: 20
   },

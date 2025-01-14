@@ -16,7 +16,7 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
     props.navigation.navigate('NewAccount')
   }
   return (
-    <KeyboardView contentContainerStyle={[sContainer.flexWhite]}>
+    <View style={[sContainer.flexWhite]}>
       <View>
         <View style={[sContainer.rowBetween, spacing.p20]}>
           <Text style={sText.subtitle}>
@@ -51,15 +51,21 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
             <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.loading} style={sButton.outline}>
               <Text style={sButton.outlineText}>New Account</Text>
             </TouchableHighlight>
-            <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.loading} style={sButton.outline}>
-              <Text style={sButton.outlineText}>+ Transaction</Text>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.loading} style={sButton.outline}>
-              <Text style={sButton.outlineText}>+ Debt</Text>
-            </TouchableHighlight>
+            {
+              !noAccount && (
+                <>
+                  <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.loading} style={sButton.outline}>
+                    <Text style={sButton.outlineText}>+ Transaction</Text>
+                  </TouchableHighlight>
+                  <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.loading} style={sButton.outline}>
+                    <Text style={sButton.outlineText}>+ Debt</Text>
+                  </TouchableHighlight>
+                </>
+              )
+            }
           </View>
         </ScrollView>
       </View>
-    </KeyboardView>
+    </View>
   )
 }

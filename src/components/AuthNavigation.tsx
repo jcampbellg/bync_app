@@ -5,7 +5,6 @@ import DashboardScreen from '../screens/auth/DashboardScreen'
 import AuthStateProvider from './AuthStateProvider'
 import NewAccountScreen from '../screens/auth/NewAccountScreen'
 
-
 export type AuthStackScreens = {
   Dashboard: undefined
   NewAccount: undefined
