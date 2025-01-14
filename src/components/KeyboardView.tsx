@@ -1,12 +1,18 @@
-import { Keyboard, KeyboardAvoidingView, ScrollView, TouchableWithoutFeedback } from 'react-native'
+import { Keyboard, KeyboardAvoidingView, ScrollView, StyleProp, TouchableWithoutFeedback, ViewStyle } from 'react-native'
+import { colors } from '../utils/constants'
 
-export default function KeyboardView({ children }: { children: React.ReactNode }) {
+type Props = {
+  children: React.ReactNode
+  scrollViewStyle?: StyleProp<ViewStyle>
+}
+
+export default function KeyboardView({ children, scrollViewStyle }: Props) {
   const dismissKeyboard = () => Keyboard.dismiss()
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, width: '100%' }}>
+    <KeyboardAvoidingView style={{ flex: 1 }}>
       <TouchableWithoutFeedback style={{ flex: 1 }} onPress={dismissKeyboard}>
-        <ScrollView style={{ flex: 1 }}>
+        <ScrollView style={scrollViewStyle}>
           {children}
         </ScrollView>
       </TouchableWithoutFeedback>

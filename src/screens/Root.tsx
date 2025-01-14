@@ -1,8 +1,9 @@
 import EncryptedStorage from 'react-native-encrypted-storage'
 import { useShallowEffect } from '@mantine/hooks'
-import { ActivityIndicator, View } from 'react-native'
+import { ActivityIndicator, FlatList, Text, View } from 'react-native'
 import { createContext, Dispatch, useContext, useReducer } from 'react'
 import { colors } from '../utils/constants'
+import styles from '../utils/styles'
 
 const initialValue = {
   baseUrl: null as string | null,
@@ -90,7 +91,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
 
   if (state.isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.white }}>
+      <View style={styles.containerCenter}>
         <ActivityIndicator size='large' color={colors.black} />
       </View>
     )
