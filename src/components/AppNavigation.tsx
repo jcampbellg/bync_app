@@ -1,9 +1,9 @@
 import LoginScreen from '../screens/LoginScreen'
-import { useApp } from '../screens/Root'
+import { useRoot } from '../screens/Root'
 import AuthNavigation from './AuthNavigation'
 
 export default function AppNavigation() {
-  const { isLogin } = useApp()
+  const { isLogin } = useRoot()
 
   if (!isLogin) {
     return <LoginScreen />

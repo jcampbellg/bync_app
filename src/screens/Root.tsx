@@ -1,9 +1,9 @@
 import EncryptedStorage from 'react-native-encrypted-storage'
 import { useShallowEffect } from '@mantine/hooks'
-import { ActivityIndicator, FlatList, Text, View } from 'react-native'
+import { ActivityIndicator, View } from 'react-native'
 import { createContext, Dispatch, useContext, useReducer } from 'react'
 import { colors } from '../utils/constants'
-import styles from '../utils/styles'
+import { sContainer } from '../utils/styles'
 
 const initialValue = {
   baseUrl: null as string | null,
@@ -91,7 +91,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
 
   if (state.isLoading) {
     return (
-      <View style={styles.containerCenter}>
+      <View style={sContainer.center}>
         <ActivityIndicator size='large' color={colors.black} />
       </View>
     )
@@ -104,7 +104,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useApp() {
+export function useRoot() {
   const context = useContext(Context)
   if (!context) {
     throw new Error('useApp must be used within Root')

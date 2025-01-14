@@ -1,116 +1,157 @@
-import { Dimensions, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import { colors } from './constants'
 
-const { width } = Dimensions.get('window')
-
-const styles = StyleSheet.create({
-  balanceHeader: {
+export const sContainer = StyleSheet.create({
+  grow: {
+    flexGrow: 1
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent'
+  },
+  flex: {
+    flex: 1,
+    backgroundColor: 'transparent'
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent'
+  },
+  rowBetween: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%',
-    padding: 20
+    backgroundColor: 'transparent'
   },
-  bigNumber: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: colors.black
-  },
-  categoryItem: {
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    width: 80,
-    backgroundColor: colors.gray.medium,
-    paddingBottom: 10,
-  },
-  categoryText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  categoryAmount: {
-    fontSize: 14,
-    color: colors.gray.loading
-  },
-  titleText: {
-    marginTop: 5,
-    fontSize: 16,
-    color: colors.black
-  },
-  subtitleText: {
-    fontSize: 16,
-    color: colors.gray.loading
-  },
-  containerCenter: {
+  centerWhite: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.white
   },
-  containerWhite: {
+  flexWhite: {
     flex: 1,
-    backgroundColor: colors.white,
-    alignItems: 'center'
+    backgroundColor: colors.white
   },
-  container: {
-    flex: 1,
-    backgroundColor: colors.gray.light,
-  },
-  containerRow: {
+  rowWhite: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    backgroundColor: colors.white
   },
-  header: {
+  centerGray: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.black,
-    color: colors.white
+    backgroundColor: colors.gray.medium
   },
-  headerAccounts: {
+  flexGray: {
+    flex: 1,
+    backgroundColor: colors.gray.medium
+  },
+  rowGray: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: colors.gray.medium
+  },
+  centerBlack: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.white,
-    color: colors.white
+    backgroundColor: colors.black
   },
-  bodyAccounts: {
-    width,
-    elevation: 5,
-    shadowColor: colors.black,
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    },
+  flexBlack: {
     flex: 1,
-    backgroundColor: colors.gray.light,
-    padding: 20,
+    backgroundColor: colors.black
+  },
+  rowBlack: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     alignItems: 'center',
+    backgroundColor: colors.black
   },
-  logo: {
-    width: 50,
-    height: 50,
-    backgroundColor: colors.white,
-    borderRadius: 10,
-  },
-  form: {
+  loginForm: {
     flex: 2,
     backgroundColor: colors.white,
     borderTopLeftRadius: 30,
     padding: 20,
     alignItems: 'center',
-  },
-  label: {
-    width: '100%',
-    fontSize: 14,
-    color: '#000',
+  }
+})
+
+export const sButton = StyleSheet.create({
+  filltext: {
+    color: colors.white,
+    fontSize: 16,
     fontWeight: 'bold',
     fontFamily: 'Roboto'
+  },
+  outlineText: {
+    color: colors.black,
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontFamily: 'Roboto'
+  },
+  outline: {
+    padding: 10,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    borderColor: colors.black,
+    borderWidth: 1,
+  },
+  outlineFull: {
+    padding: 10,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    borderColor: colors.black,
+    borderWidth: 1,
+    width: '100%',
+  },
+  fill: {
+    padding: 12,
+    backgroundColor: colors.black,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  fillFull: {
+    padding: 12,
+    backgroundColor: colors.black,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    width: '100%',
+  }
+})
+
+export const sText = StyleSheet.create({
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.black,
+    marginVertical: 20,
+    fontFamily: 'Roboto'
+  },
+  subtitle: {
+    fontSize: 14,
+    color: colors.black,
+    opacity: 0.7,
+    fontFamily: 'Roboto',
   },
   titleWhite: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 20,
     color: colors.white,
+    marginVertical: 20,
     fontFamily: 'Roboto'
   },
   subtitleWhite: {
@@ -119,19 +160,22 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     fontFamily: 'Roboto'
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginVertical: 20,
-    fontFamily: 'Roboto'
-  },
-  subtitle: {
+  label: {
+    width: '100%',
     fontSize: 14,
     color: colors.black,
-    opacity: 0.8,
+    fontWeight: 'bold',
     fontFamily: 'Roboto'
   },
-  input: {
+  bigNumber: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: colors.black
+  },
+})
+
+export const sInput = StyleSheet.create({
+  border: {
     fontFamily: 'Roboto',
     width: '100%',
     height: 50,
@@ -149,34 +193,51 @@ const styles = StyleSheet.create({
       height: 10,
     }
   },
-  button: {
-    padding: 10,
-    backgroundColor: colors.black,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: 'bold',
-    fontFamily: 'Roboto'
-  },
-  buttonOutline: {
-    padding: 10,
-    backgroundColor: 'transparent',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    borderColor: colors.black,
-    borderWidth: 1,
-  },
-  buttonOutlineText: {
+  line: {
+    fontFamily: 'Roboto',
+    width: '100%',
+    fontSize: 24,
     color: colors.black,
-    fontSize: 16,
-    fontWeight: 'bold',
-    fontFamily: 'Roboto'
+    backgroundColor: colors.white,
+    borderRadius: 0,
+    paddingHorizontal: 5,
+    borderColor: colors.black,
+    borderBottomWidth: 4
   }
 })
 
-export default styles
+export const spacing = StyleSheet.create({
+  mt20: {
+    marginTop: 20
+  },
+  mb10: {
+    marginBottom: 10
+  },
+  p20: {
+    padding: 20
+  },
+  ph20: {
+    paddingHorizontal: 20
+  },
+  pb20: {
+    paddingBottom: 20
+  },
+  gap10: {
+    gap: 10
+  },
+  gap20: {
+    gap: 20
+  }
+})
+
+export const bg = StyleSheet.create({
+  black: {
+    backgroundColor: colors.black
+  },
+  white: {
+    backgroundColor: colors.white
+  },
+  gray: {
+    backgroundColor: colors.gray.medium
+  }
+})

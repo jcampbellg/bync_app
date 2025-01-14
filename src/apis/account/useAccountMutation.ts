@@ -1,5 +1,5 @@
 import { useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query'
-import { useApp } from '../../screens/Root'
+import { useRoot } from '../../screens/Root'
 import { Account, AccountWithBalances } from '../../utils/dbTypes'
 import { NewAccountForm } from '../../screens/NewAccountScreen'
 
@@ -11,7 +11,7 @@ type QueryProps = Omit<UseMutationOptions<Account, Error, NewAccountForm>, 'quer
 
 export default function useAccountMutation({ onSuccess, ...props }: QueryProps = {}) {
   const queryClient = useQueryClient()
-  const { key, baseUrl } = useApp()
+  const { key, baseUrl } = useRoot()
 
   const query = useMutation({
     mutationFn: async (params: NewAccountForm) => {
