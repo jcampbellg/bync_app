@@ -14,6 +14,9 @@ export default function useAccountQuery(id: number | null, props: QueryProps = {
   const query = useQuery({
     queryKey: ['account', id],
     queryFn: async () => {
+      if (id === null) {
+        return Promise.resolve({ account: null })
+      }
       const url = baseUrl + `/api/account/${id}`
 
       const response = await fetch(url, {

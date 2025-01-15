@@ -25,10 +25,14 @@ export default function AuthStateProvider({ children }: { children: React.ReactN
   const [state, setState] = useReducer(reducer, initialValue)
 
   const accountsQuery = useAccountsQuery()
-  const accountQuery = useAccountQuery(state.accountSelected?.id || null)
+
+  const accountSelected: Account | null = state.accountSelected || accountsQuery.data?.accounts?.find(account => account.isDefault) || null
+
+  const accountQuery = useAccountQuery(accountSelected?.id || null)
 
   const value: AuthStateContext = {
     ...state,
+    accountSelected,
     setState,
     accountsQuery,
     accountQuery

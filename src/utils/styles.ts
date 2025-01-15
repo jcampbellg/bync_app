@@ -110,6 +110,12 @@ export const sButton = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Roboto'
   },
+  filltextLarge: {
+    color: colors.white,
+    fontSize: 24,
+    fontWeight: 'bold',
+    fontFamily: 'Roboto'
+  },
   outlineText: {
     color: colors.black,
     fontSize: 16,
@@ -201,6 +207,9 @@ export const sText = StyleSheet.create({
     opacity: 0.7,
     fontFamily: 'Roboto',
   },
+  red: {
+    color: colors.error
+  }
 })
 
 export const sInput = StyleSheet.create({
@@ -232,6 +241,26 @@ export const sInput = StyleSheet.create({
     paddingHorizontal: 5,
     borderColor: colors.black,
     borderBottomWidth: 4
+  },
+  toggleSwitch: {
+    flexDirection: 'row',
+    width: 70,
+    color: colors.black,
+    backgroundColor: colors.white,
+    borderRadius: 35,
+    padding: 5,
+    elevation: 5,
+    shadowColor: colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    }
+  },
+  toggleSwitchCircle: {
+    width: 30,
+    height: 30,
+    borderRadius: 30,
+    backgroundColor: colors.gray.medium
   }
 })
 
@@ -250,6 +279,9 @@ export const spacing = StyleSheet.create({
   },
   ph20: {
     paddingHorizontal: 20
+  },
+  pv20: {
+    paddingVertical: 20
   },
   pb20: {
     paddingBottom: 20
@@ -278,5 +310,8 @@ export const border = StyleSheet.create({
   b1: {
     borderBottomWidth: 1,
     borderColor: colors.black
+  },
+  red: {
+    borderColor: colors.error
   }
 })

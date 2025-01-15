@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View, TextInput, Animated, useAnimatedValue, Easing, ActivityIndicator } from 'react-native'
+import { Text, TouchableOpacity, View, TextInput, Animated, useAnimatedValue, Easing, ActivityIndicator, TouchableHighlight } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthStackScreens } from '../../components/AuthNavigation'
 import KeyboardView from '../../components/KeyboardView'
@@ -12,6 +12,7 @@ import { useRef } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
 import useAccountMutation from '../../apis/account/useAccountMutation'
 import { useAuthState } from '../../components/AuthStateProvider'
+import ToggleSwitch from '../../components/ui/ToggleSwitch'
 
 const schema = z.object({
   description: descriptionValidation,
@@ -19,12 +20,12 @@ const schema = z.object({
   currency: symbolValidation,
   amount: amountWith0Validation,
   startDate: dateNumberValidation,
+  isDefault: z.boolean()
 })
 
 export type NewAccountForm = z.infer<typeof schema>
 
 const resolver = zodResolver(schema)
-
 
 export default function NewAccountScreen(props: NativeStackScreenProps<AuthStackScreens, 'NewAccount'>) {
   const anim = {
@@ -34,6 +35,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       currency: useAnimatedValue(0),
       amount: useAnimatedValue(0),
       startDate: useAnimatedValue(0),
+      isDefault: useAnimatedValue(0),
       loading: useAnimatedValue(0)
     },
     opacity: {
@@ -42,6 +44,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       currency: useAnimatedValue(0),
       amount: useAnimatedValue(0),
       startDate: useAnimatedValue(0),
+      isDefault: useAnimatedValue(0),
       loading: useAnimatedValue(0)
     },
     position: {
@@ -49,6 +52,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       currency: useAnimatedValue(220),
       amount: useAnimatedValue(220),
       startDate: useAnimatedValue(220),
+      isDefault: useAnimatedValue(220),
       loading: useAnimatedValue(220)
     }
   }
@@ -62,8 +66,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
 
   const methods = useForm<NewAccountForm>({
     resolver,
-    mode: 'onChange',
-
+    mode: 'onChange'
   })
 
   const { setState } = useAuthState()
@@ -82,13 +85,13 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     Animated.timing(anim.opacity.description, {
       toValue: 0,
       duration: 200,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.opacity.notes, {
       toValue: 80,
       duration: 300,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.position.notes, {
@@ -112,13 +115,13 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     Animated.timing(anim.opacity.notes, {
       toValue: 0,
       duration: 200,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.opacity.currency, {
       toValue: 80,
       duration: 300,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.position.currency, {
@@ -142,13 +145,13 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     Animated.timing(anim.opacity.currency, {
       toValue: 0,
       duration: 200,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.opacity.amount, {
       toValue: 80,
       duration: 300,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.position.amount, {
@@ -173,13 +176,13 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     Animated.timing(anim.opacity.amount, {
       toValue: 0,
       duration: 200,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.opacity.startDate, {
       toValue: 80,
       duration: 300,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.position.startDate, {
@@ -192,7 +195,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     refs.startDate.current?.focus()
   }
 
-  const goToLoading = () => {
+  const goToIsDefault = () => {
     if (!!errors.startDate) return
 
     Animated.timing(anim.pill.startDate, {
@@ -204,16 +207,16 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     Animated.timing(anim.opacity.startDate, {
       toValue: 0,
       duration: 200,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
-    Animated.timing(anim.opacity.loading, {
+    Animated.timing(anim.opacity.isDefault, {
       toValue: 80,
       duration: 300,
-      easing: Easing.cubic,
+      easing: Easing.linear,
       useNativeDriver: true,
     }).start()
-    Animated.timing(anim.position.loading, {
+    Animated.timing(anim.position.isDefault, {
       toValue: 0,
       duration: 300,
       easing: Easing.cubic,
@@ -231,11 +234,9 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
   })
 
   const onSubmit = handleSubmit((data: NewAccountForm) => {
-    console.log('SUBMIT')
-    goToLoading()
     mutate(data)
-  }
-  )
+  })
+
   const goBack = () => {
     props.navigation.navigate('Dashboard')
   }
@@ -454,7 +455,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 placeholder='1 - 31'
                 enterKeyHint='done'
                 submitBehavior='blurAndSubmit'
-                onSubmitEditing={onSubmit}
+                onSubmitEditing={goToIsDefault}
               />
             )}
           />
@@ -465,23 +466,34 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
             {errors.startDate?.message}
           </Text>
         </Animated.View>
-        {/* Loading */}
+        {/* Is Default */}
         <Animated.View style={[spacing.p20, {
           width: '100%',
-          opacity: anim.opacity.loading,
+          opacity: anim.opacity.isDefault,
           position: 'absolute',
-          top: 150,
-          transform: [{ translateY: anim.position.loading }]
+          top: 80,
+          transform: [{ translateY: anim.position.isDefault }]
         }]
         }>
-          <ActivityIndicator size={50} color={colors.black} />
-          {
-            !!isError && (
-              <Text style={[sText.error, spacing.mt10, sText.center]}>
-                {error?.message || 'An error occurred, Please try again'}
+          <Text style={[sText.bigNumber]}>
+            Set as Default
+          </Text>
+          <Controller
+            control={control}
+            name='isDefault'
+            defaultValue={false}
+            render={({ field: { onChange, value } }) => (
+              <ToggleSwitch onChange={onChange} value={value} />
+            )}
+          />
+          <TouchableHighlight onPress={onSubmit} underlayColor={colors.gray.loading} style={[sButton.fill, spacing.mt20]} disabled={isPending}>
+            <View style={[sContainer.rowCenter, spacing.gap10]}>
+              {isPending && <ActivityIndicator size={24} color={colors.white} />}
+              <Text style={sButton.filltextLarge}>
+                Create Account
               </Text>
-            )
-          }
+            </View>
+          </TouchableHighlight>
         </Animated.View>
       </View>
     </KeyboardView>
