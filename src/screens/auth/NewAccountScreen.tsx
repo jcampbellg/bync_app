@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View, TextInput, Animated, useAnimatedValue, Easing } from 'react-native'
+import { Text, TouchableOpacity, View, TextInput, Animated, useAnimatedValue, Easing, ActivityIndicator } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthStackScreens } from '../../components/AuthNavigation'
 import KeyboardView from '../../components/KeyboardView'
@@ -10,6 +10,8 @@ import { amountWith0Validation, dateNumberValidation, descriptionValidation, not
 import { Controller, useForm } from 'react-hook-form'
 import { useRef } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
+import useAccountMutation from '../../apis/account/useAccountMutation'
+import { useAuthState } from '../../components/AuthStateProvider'
 
 const schema = z.object({
   description: descriptionValidation,
@@ -32,7 +34,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       currency: useAnimatedValue(0),
       amount: useAnimatedValue(0),
       startDate: useAnimatedValue(0),
-      isDefault: useAnimatedValue(0)
+      loading: useAnimatedValue(0)
     },
     opacity: {
       description: useAnimatedValue(1),
@@ -40,14 +42,14 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       currency: useAnimatedValue(0),
       amount: useAnimatedValue(0),
       startDate: useAnimatedValue(0),
-      isDefault: useAnimatedValue(0)
+      loading: useAnimatedValue(0)
     },
     position: {
-      notes: useAnimatedValue(200),
-      currency: useAnimatedValue(200),
-      amount: useAnimatedValue(200),
-      startDate: useAnimatedValue(200),
-      isDefault: useAnimatedValue(200)
+      notes: useAnimatedValue(220),
+      currency: useAnimatedValue(220),
+      amount: useAnimatedValue(220),
+      startDate: useAnimatedValue(220),
+      loading: useAnimatedValue(220)
     }
   }
 
@@ -60,10 +62,13 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
 
   const methods = useForm<NewAccountForm>({
     resolver,
-    mode: 'onChange'
+    mode: 'onChange',
+
   })
 
-  const { control, formState: { errors } } = methods
+  const { setState } = useAuthState()
+
+  const { control, formState: { errors }, handleSubmit } = methods
 
   const goToNotes = () => {
     if (!!errors.description) return
@@ -81,7 +86,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.opacity.notes, {
-      toValue: 60,
+      toValue: 80,
       duration: 300,
       easing: Easing.cubic,
       useNativeDriver: true,
@@ -111,7 +116,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.opacity.currency, {
-      toValue: 60,
+      toValue: 80,
       duration: 300,
       easing: Easing.cubic,
       useNativeDriver: true,
@@ -141,7 +146,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.opacity.amount, {
-      toValue: 60,
+      toValue: 80,
       duration: 300,
       easing: Easing.cubic,
       useNativeDriver: true,
@@ -172,7 +177,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       useNativeDriver: true,
     }).start()
     Animated.timing(anim.opacity.startDate, {
-      toValue: 60,
+      toValue: 80,
       duration: 300,
       easing: Easing.cubic,
       useNativeDriver: true,
@@ -183,12 +188,54 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       easing: Easing.cubic,
       useNativeDriver: true,
     }).start()
+
+    refs.startDate.current?.focus()
   }
 
-  const onSubmit = (data: NewAccountForm) => {
-    console.log(data)
+  const goToLoading = () => {
+    if (!!errors.startDate) return
+
+    Animated.timing(anim.pill.startDate, {
+      toValue: 1,
+      duration: 200,
+      easing: Easing.cubic,
+      useNativeDriver: true,
+    }).start()
+    Animated.timing(anim.opacity.startDate, {
+      toValue: 0,
+      duration: 200,
+      easing: Easing.cubic,
+      useNativeDriver: true,
+    }).start()
+    Animated.timing(anim.opacity.loading, {
+      toValue: 80,
+      duration: 300,
+      easing: Easing.cubic,
+      useNativeDriver: true,
+    }).start()
+    Animated.timing(anim.position.loading, {
+      toValue: 0,
+      duration: 300,
+      easing: Easing.cubic,
+      useNativeDriver: true,
+    }).start()
   }
 
+  const { mutate, isPending, isError, error } = useAccountMutation({
+    onSuccess: ({ account }) => {
+      setState({
+        accountSelected: account
+      })
+      props.navigation.navigate('Dashboard')
+    }
+  })
+
+  const onSubmit = handleSubmit((data: NewAccountForm) => {
+    console.log('SUBMIT')
+    goToLoading()
+    mutate(data)
+  }
+  )
   const goBack = () => {
     props.navigation.navigate('Dashboard')
   }
@@ -197,39 +244,61 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     <KeyboardView scrollViewStyle={bg.white}>
       <View style={sContainer.flexWhite}>
         <View style={[sContainer.rowBetween, spacing.p20]}>
-          <TouchableOpacity onPress={goBack}>
+          <TouchableOpacity disabled={isPending} onPress={goBack}>
             <Text style={sText.subtitle}>
               ◀ New Account
             </Text>
           </TouchableOpacity>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20]}>
+          <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20, spacing.pb20]}>
             <Animated.View style={[sButton.pill, { opacity: anim.pill.description }]}>
+              <Text style={sButton.pillLabel}>
+                Description
+              </Text>
               <Text style={sButton.pillText}>
                 {methods.watch('description')}
               </Text>
             </Animated.View>
             <Animated.View style={[sButton.pill, { opacity: anim.pill.notes }]}>
+              <Text style={sButton.pillLabel}>
+                Notes
+              </Text>
               <Text style={sButton.pillText}>
                 {methods.watch('notes') || 'No Notes'}
               </Text>
             </Animated.View>
             <Animated.View style={[sButton.pill, { opacity: anim.pill.currency }]}>
+              <Text style={sButton.pillLabel}>
+                Currency
+              </Text>
               <Text style={sButton.pillText}>
                 {methods.watch('currency')}
               </Text>
             </Animated.View>
             <Animated.View style={[sButton.pill, { opacity: anim.pill.amount }]}>
+              <Text style={sButton.pillLabel}>
+                Balance
+              </Text>
               <Text style={sButton.pillText}>
                 {methods.watch('amount')}
+              </Text>
+            </Animated.View>
+            <Animated.View style={[sButton.pill, { opacity: anim.pill.startDate }]}>
+              <Text style={sButton.pillLabel}>
+                Month Start
+              </Text>
+              <Text style={sButton.pillText}>
+                {methods.watch('startDate')}
               </Text>
             </Animated.View>
           </View>
         </ScrollView>
         <Animated.View style={[spacing.p20, {
           width: '100%',
-          opacity: anim.opacity.description
+          opacity: anim.opacity.description,
+          position: 'absolute',
+          top: 80
         }]}>
           <Text style={[sText.bigNumber]}>
             Account Description
@@ -259,7 +328,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
           width: '100%',
           opacity: anim.opacity.notes,
           position: 'absolute',
-          top: 60,
+          top: 80,
           transform: [{ translateY: anim.position.notes }]
         }]
         }>
@@ -292,7 +361,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
           width: '100%',
           opacity: anim.opacity.currency,
           position: 'absolute',
-          top: 60,
+          top: 80,
           transform: [{ translateY: anim.position.currency }]
         }]
         }>
@@ -330,7 +399,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
           width: '100%',
           opacity: anim.opacity.amount,
           position: 'absolute',
-          top: 60,
+          top: 80,
           transform: [{ translateY: anim.position.amount }]
         }]
         }>
@@ -364,7 +433,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
           width: '100%',
           opacity: anim.opacity.startDate,
           position: 'absolute',
-          top: 60,
+          top: 80,
           transform: [{ translateY: anim.position.startDate }]
         }]
         }>
@@ -384,8 +453,8 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 keyboardType='number-pad'
                 placeholder='1 - 31'
                 enterKeyHint='done'
-                submitBehavior='submit'
-                onSubmitEditing={methods.handleSubmit(onSubmit)}
+                submitBehavior='blurAndSubmit'
+                onSubmitEditing={onSubmit}
               />
             )}
           />
@@ -395,6 +464,24 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
           <Text style={[sText.error, spacing.mt10]}>
             {errors.startDate?.message}
           </Text>
+        </Animated.View>
+        {/* Loading */}
+        <Animated.View style={[spacing.p20, {
+          width: '100%',
+          opacity: anim.opacity.loading,
+          position: 'absolute',
+          top: 150,
+          transform: [{ translateY: anim.position.loading }]
+        }]
+        }>
+          <ActivityIndicator size={50} color={colors.black} />
+          {
+            !!isError && (
+              <Text style={[sText.error, spacing.mt10, sText.center]}>
+                {error?.message || 'An error occurred, Please try again'}
+              </Text>
+            )
+          }
         </Animated.View>
       </View>
     </KeyboardView>

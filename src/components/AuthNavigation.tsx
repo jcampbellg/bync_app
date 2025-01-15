@@ -4,10 +4,12 @@ import { createStackNavigator } from '@react-navigation/stack'
 import DashboardScreen from '../screens/auth/DashboardScreen'
 import AuthStateProvider from './AuthStateProvider'
 import NewAccountScreen from '../screens/auth/NewAccountScreen'
+import SelectAccountScreen from '../screens/auth/SelectAccountScreen'
 
 export type AuthStackScreens = {
   Dashboard: undefined
   NewAccount: undefined
+  SelectAccount: undefined
 }
 
 const AuthStack = createStackNavigator<AuthStackScreens>()
@@ -17,7 +19,7 @@ export default function AuthNavigation() {
   return (
     <NavigationContainer>
       <AuthStateProvider>
-        <AuthStack.Navigator screenOptions={{ headerShown: false }}>
+        <AuthStack.Navigator screenOptions={{ headerShown: false, presentation: 'modal' }}>
           <AuthStack.Screen
             name='Dashboard'
             component={DashboardScreen}
@@ -25,6 +27,10 @@ export default function AuthNavigation() {
           <AuthStack.Screen
             name='NewAccount'
             component={NewAccountScreen}
+          />
+          <AuthStack.Screen
+            name='SelectAccount'
+            component={SelectAccountScreen}
           />
         </AuthStack.Navigator>
       </AuthStateProvider>

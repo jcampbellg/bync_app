@@ -1,8 +1,7 @@
-import { Text, TouchableHighlight, View } from 'react-native'
+import { Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthStackScreens } from '../../components/AuthNavigation'
-import KeyboardView from '../../components/KeyboardView'
-import { bg, sButton, sContainer, spacing, sText } from '../../utils/styles'
+import { sButton, sContainer, spacing, sText } from '../../utils/styles'
 import { useAuthState } from '../../components/AuthStateProvider'
 import { colors } from '../../utils/constants'
 import { ScrollView } from 'react-native-gesture-handler'
@@ -15,13 +14,19 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
   const goToNewAccount = () => {
     props.navigation.navigate('NewAccount')
   }
+
+  const goToSelectAccount = () => {
+    props.navigation.navigate('SelectAccount')
+  }
   return (
     <View style={[sContainer.flexWhite]}>
       <View>
         <View style={[sContainer.rowBetween, spacing.p20]}>
-          <Text style={sText.subtitle}>
-            {accountSelected?.description || 'No account selected'} ▼
-          </Text>
+          <TouchableOpacity onPress={goToSelectAccount}>
+            <Text style={sText.subtitle}>
+              {accountSelected?.description || 'No account selected'} ▼
+            </Text>
+          </TouchableOpacity>
           <Text style={sText.subtitle}>
             this month ▼
           </Text>

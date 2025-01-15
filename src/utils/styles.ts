@@ -88,9 +88,16 @@ export const sButton = StyleSheet.create({
   pill: {
     paddingHorizontal: 8,
     backgroundColor: colors.gray.loading,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
     borderRadius: 4,
+  },
+  pillLabel: {
+    fontSize: 10,
+    color: colors.white,
+    opacity: 0.8,
+    fontFamily: 'Roboto',
+    marginBottom: 1
   },
   pillText: {
     fontSize: 14,
@@ -146,6 +153,10 @@ export const sButton = StyleSheet.create({
 })
 
 export const sText = StyleSheet.create({
+  center: {
+    textAlign: 'center',
+    fontFamily: 'Roboto'
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -260,5 +271,12 @@ export const bg = StyleSheet.create({
   },
   gray: {
     backgroundColor: colors.gray.medium
+  }
+})
+
+export const border = StyleSheet.create({
+  b1: {
+    borderBottomWidth: 1,
+    borderColor: colors.black
   }
 })

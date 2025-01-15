@@ -1,5 +1,6 @@
 import { createContext, Dispatch, useContext, useReducer } from 'react'
 import { Account } from '../utils/dbTypes'
+import useAccountsQuery from '../apis/account/useAccountsQuery'
 import useAccountQuery from '../apis/account/useAccountQuery'
 
 const initialValue = {
@@ -10,6 +11,7 @@ type AuthState = typeof initialValue
 
 type AuthStateContext = AuthState & {
   setState: Dispatch<Partial<AuthState>>
+  accountsQuery: ReturnType<typeof useAccountsQuery>
   accountQuery: ReturnType<typeof useAccountQuery>
 }
 
@@ -22,11 +24,13 @@ const reducer = (prev: AuthState, next: Partial<AuthState>) => {
 export default function AuthStateProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useReducer(reducer, initialValue)
 
-  const accountQuery = useAccountQuery()
+  const accountsQuery = useAccountsQuery()
+  const accountQuery = useAccountQuery(state.accountSelected?.id || null)
 
   const value: AuthStateContext = {
     ...state,
     setState,
+    accountsQuery,
     accountQuery
   }
 

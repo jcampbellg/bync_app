@@ -1,13 +1,9 @@
 import { useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query'
 import { useRoot } from '../../screens/Root'
-import { Account, AccountWithBalances } from '../../utils/dbTypes'
-import { NewAccountForm } from '../../screens/NewAccountScreen'
+import { Account } from '../../utils/dbTypes'
+import { NewAccountForm } from '../../screens/auth/NewAccountScreen'
 
-export type AccountsGetData = {
-  accounts: AccountWithBalances[]
-}
-
-type QueryProps = Omit<UseMutationOptions<Account, Error, NewAccountForm>, 'queryKey' | 'queryFn'>
+type QueryProps = Omit<UseMutationOptions<{ account: Account }, Error, NewAccountForm>, 'queryKey' | 'queryFn'>
 
 export default function useAccountMutation({ onSuccess, ...props }: QueryProps = {}) {
   const queryClient = useQueryClient()
@@ -17,7 +13,6 @@ export default function useAccountMutation({ onSuccess, ...props }: QueryProps =
     mutationFn: async (params: NewAccountForm) => {
       const url = baseUrl + '/api/account'
 
-      console.log('url', url, key)
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -29,10 +24,9 @@ export default function useAccountMutation({ onSuccess, ...props }: QueryProps =
 
       if (!response.ok) {
         const error = await response.json()
-        console.error(`error in useAccountMutation: ${error}`)
+        console.error(`error in useAccountMutation:`, error)
         return Promise.reject(error)
       }
-      console.log('response', 'hi')
       const data = await response.json()
       return data
     },
@@ -40,9 +34,6 @@ export default function useAccountMutation({ onSuccess, ...props }: QueryProps =
     onSuccess: async (...args) => {
       queryClient.invalidateQueries({
         queryKey: ['account']
-      })
-      queryClient.refetchQueries({
-        queryKey: ['accounts']
       })
       onSuccess?.(...args)
     },

@@ -2,19 +2,15 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { useRoot } from '../../screens/Root'
 import { Account } from '../../utils/dbTypes'
 
-export type AccountGetData = {
-  account: Account
-}
+type QueryProps = Omit<UseQueryOptions<{ accounts: Account[] }>, 'queryKey' | 'queryFn'>
 
-type QueryProps = Omit<UseQueryOptions<AccountGetData>, 'queryKey' | 'queryFn'>
-
-export default function useAccountQuery(id: number | null, props: QueryProps = {}) {
+export default function useAccountsQuery(props: QueryProps = {}) {
   const { key, baseUrl, isLogin } = useRoot()
 
   const query = useQuery({
-    queryKey: ['account', id],
+    queryKey: ['account'],
     queryFn: async () => {
-      const url = baseUrl + `/api/account/${id}`
+      const url = baseUrl + '/api/account'
 
       const response = await fetch(url, {
         method: 'GET',
@@ -26,14 +22,14 @@ export default function useAccountQuery(id: number | null, props: QueryProps = {
 
       if (!response.ok) {
         const error = await response.json()
-        console.error(`error in useAccountQuery`, error)
+        console.error(`error in useAccountsQuery`, error)
         return Promise.reject(error)
       }
       const data = await response.json()
       return data
     },
-    enabled: !!isLogin && !!id,
-    ...props,
+    enabled: !!isLogin,
+    ...props
   })
 
   return query
