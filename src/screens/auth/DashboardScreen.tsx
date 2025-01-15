@@ -1,13 +1,14 @@
-import { Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
+import { processColor, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthStackScreens } from '../../components/AuthNavigation'
-import { border, sButton, sContainer, spacing, sText } from '../../utils/styles'
+import { bg, border, sButton, sContainer, sGraph, spacing, sText } from '../../utils/styles'
 import { useAuthState } from '../../components/AuthStateProvider'
 import { colors } from '../../utils/constants'
 import { ScrollView } from 'react-native-gesture-handler'
 import Skeleton from '../../components/ui/Skeleton'
 import Snackbar from 'react-native-snackbar'
 import useAccountDeleteMutation from '../../apis/account/useAccountDeleteMutation'
+import numbro from 'numbro'
 
 export default function DashboardScreen(props: NativeStackScreenProps<AuthStackScreens, 'Dashboard'>) {
   const { accountSelected, accountsQuery, accountQuery, setState } = useAuthState()
@@ -69,7 +70,11 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
             <Skeleton delay={300} style={{ height: 48, width: 100 }} />
           </View>
         </View>
-        <View style={[sContainer.flex]} />
+        <View style={[sContainer.rowEnd, sContainer.flex, spacing.p20, spacing.gap10]}>
+          <Skeleton delay={400} style={{ height: '100%', flex: 1 }} />
+          <Skeleton delay={400} style={{ height: '90%', flex: 1 }} />
+          <Skeleton delay={400} style={{ height: '50%', flex: 1 }} />
+        </View>
         <View style={[spacing.ph20]}>
           <Skeleton delay={400} style={{ height: 14, width: 100 }} />
           <View style={[sContainer.rowBetween, spacing.gap10, spacing.pv20]}>
@@ -123,22 +128,26 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
             </View>
           </View>
         </ScrollView>
-        <View style={sContainer.rowCenter}>
-          <Text style={[sText.bigNumber]}>
-            {
-              noAccount ? 'N/A' : 100
-            }
-          </Text>
-          <Text style={sText.subtitle}>
-            {
-              noAccount ? 'N/A' : 'USD ▼'
-            }
-          </Text>
+        <Balance {...props} />
+      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[sContainer.flex]}>
+        <View style={[sContainer.rowEnd, spacing.p20, spacing.gap10]}>
+          <View style={[sGraph.bar, { height: '50%' }]}>
+          </View>
+          <View style={[sGraph.bar, { height: '50%' }]}>
+          </View>
+          <View style={[sGraph.bar, { height: '50%' }]}>
+          </View>
+          <View style={[sGraph.bar, { height: '50%' }]}>
+          </View>
+          <View style={[sGraph.bar, { height: '50%' }]}>
+          </View>
+          <View style={[sGraph.bar, { height: '50%' }]}>
+          </View>
+          <View style={[sGraph.bar, { height: '100%' }]}>
+          </View>
         </View>
-      </View>
-      <View style={[sContainer.flex]}>
-
-      </View>
+      </ScrollView>
       <View style={spacing.pb20}>
         <Text style={[sText.subtitle, spacing.ph20, spacing.mb10]}>
           Actions:
@@ -175,6 +184,49 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
           </View>
         </ScrollView>
       </View>
+    </View>
+  )
+}
+
+function Balance(props: NativeStackScreenProps<AuthStackScreens, 'Dashboard'>) {
+  const { accountSelected, currencySelected, balanceQuery, setState, showBalance } = useAuthState()
+  const noAccount = !accountSelected
+
+  const goToCurrency = () => {
+    if (noAccount) return
+
+    props.navigation.navigate('SelectBalance')
+  }
+
+  const toggleBalance = () => {
+    setState({
+      showBalance: !showBalance
+    })
+  }
+
+  const balance = balanceQuery.data?.balances.find(b => b.currency === currencySelected)
+
+  return (
+    <View>
+      <View style={sContainer.rowCenter}>
+        <Text style={[sText.bigNumber]}>
+          {
+            noAccount ? 'N/A' : balance?.amount !== undefined ? numbro(balance.amount).format({ thousandSeparated: true, mantissa: 2 }) : 'N/A'
+          }
+        </Text>
+        <TouchableOpacity onPress={goToCurrency}>
+          <Text style={sText.subtitle}>
+            {
+              noAccount ? 'N/A' : `${currencySelected} ▼`
+            }
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <TouchableOpacity onPress={toggleBalance} style={[spacing.p10]}>
+        <Text style={[sText.subtitle, sText.center]}>
+          {showBalance ? 'Balance ▼' : 'Total This Month ▼'}
+        </Text>
+      </TouchableOpacity>
     </View>
   )
 }

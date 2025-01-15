@@ -5,11 +5,13 @@ import DashboardScreen from '../screens/auth/DashboardScreen'
 import AuthStateProvider from './AuthStateProvider'
 import NewAccountScreen from '../screens/auth/NewAccountScreen'
 import SelectAccountScreen from '../screens/auth/SelectAccountScreen'
+import SelectBalanceScreen from '../screens/auth/SelectBalanceScreen'
 
 export type AuthStackScreens = {
   Dashboard: undefined
   NewAccount: undefined
   SelectAccount: undefined
+  SelectBalance: undefined
 }
 
 const AuthStack = createStackNavigator<AuthStackScreens>()
@@ -31,6 +33,10 @@ export default function AuthNavigation() {
           <AuthStack.Screen
             name='SelectAccount'
             component={SelectAccountScreen}
+          />
+          <AuthStack.Screen
+            name='SelectBalance'
+            component={SelectBalanceScreen}
           />
         </AuthStack.Navigator>
       </AuthStateProvider>

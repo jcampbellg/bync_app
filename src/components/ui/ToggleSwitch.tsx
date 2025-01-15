@@ -45,7 +45,7 @@ export default function ToggleSwitch({ value, onChange }: Props) {
     }]} >
       <Animated.View style={[sInput.toggleSwitchCircle, {
         transform: [{ translateX: ball.interpolate({ inputRange: [0, 1], outputRange: [0, 30] }) }],
-        backgroundColor: ball.interpolate({ inputRange: [0, 1], outputRange: [colors.gray.loading, colors.black] })
+        backgroundColor: ball.interpolate({ inputRange: [0, 1], outputRange: [colors.gray.hard, colors.black] })
       }]}>
 
       </Animated.View>

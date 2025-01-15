@@ -11,8 +11,19 @@ export const sContainer = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent'
   },
+  alignEnd: {
+    flex: 1,
+    alignItems: 'flex-end',
+    backgroundColor: 'transparent'
+  },
   flex: {
     flex: 1,
+    backgroundColor: 'transparent'
+  },
+  rowEnd: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'flex-end',
     backgroundColor: 'transparent'
   },
   rowCenter: {
@@ -87,7 +98,7 @@ export const sContainer = StyleSheet.create({
 export const sButton = StyleSheet.create({
   pill: {
     paddingHorizontal: 8,
-    backgroundColor: colors.gray.loading,
+    backgroundColor: colors.gray.hard,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     borderRadius: 4,
@@ -274,6 +285,9 @@ export const spacing = StyleSheet.create({
   mb10: {
     marginBottom: 10
   },
+  p10: {
+    padding: 10
+  },
   p20: {
     padding: 20
   },
@@ -313,5 +327,12 @@ export const border = StyleSheet.create({
   },
   red: {
     borderColor: colors.error
+  }
+})
+
+export const sGraph = StyleSheet.create({
+  bar: {
+    backgroundColor: colors.gray.medium,
+    width: 100
   }
 })

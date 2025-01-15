@@ -1,6 +1,6 @@
 export const colors = {
   gray: {
-    loading: '#76777B',
+    hard: '#76777B',
     light: '#F0F0F0',
     skeleton: '#E0E0E0',
     medium: '#e5e5e5',

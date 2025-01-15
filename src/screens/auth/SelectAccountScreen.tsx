@@ -17,7 +17,7 @@ import { Account } from '../../utils/dbTypes'
 export default function SelectAccountScreen(props: NativeStackScreenProps<AuthStackScreens, 'SelectAccount'>) {
   const { accountsQuery, setState } = useAuthState()
   const goBack = () => {
-    props.navigation.navigate('Dashboard')
+    props.navigation.goBack()
   }
 
   const onSelectAccount = (acc: Account) => {

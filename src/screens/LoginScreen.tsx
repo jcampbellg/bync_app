@@ -45,7 +45,7 @@ export default function LoginScreen() {
           placeholderTextColor="#888"
           secureTextEntry
         />
-        <TouchableHighlight onPress={onLogin} underlayColor={colors.gray.loading} style={sButton.fillFull}>
+        <TouchableHighlight onPress={onLogin} underlayColor={colors.gray.hard} style={sButton.fillFull}>
           <Text style={sButton.filltext}>Login</Text>
         </TouchableHighlight>
       </View>

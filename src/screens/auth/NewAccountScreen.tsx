@@ -312,7 +312,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 value={value}
                 onChangeText={onChange}
                 style={sInput.line}
-                placeholderTextColor={colors.gray.loading}
+                placeholderTextColor={colors.gray.hard}
                 onSubmitEditing={goToNotes}
                 placeholder='Type here...'
                 enterKeyHint='next'
@@ -345,7 +345,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 value={value}
                 onChangeText={onChange}
                 style={sInput.line}
-                placeholderTextColor={colors.gray.loading}
+                placeholderTextColor={colors.gray.hard}
                 placeholder='(Optional) Type here...'
                 enterKeyHint='next'
                 submitBehavior='submit'
@@ -378,7 +378,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 value={value}
                 onChangeText={onChange}
                 style={sInput.line}
-                placeholderTextColor={colors.gray.loading}
+                placeholderTextColor={colors.gray.hard}
                 autoCapitalize='characters'
                 maxLength={3}
                 placeholder='Three letter currency code'
@@ -416,7 +416,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 value={value?.toString()}
                 onChangeText={onChange}
                 style={sInput.line}
-                placeholderTextColor={colors.gray.loading}
+                placeholderTextColor={colors.gray.hard}
                 keyboardType='number-pad'
                 placeholder='Type here...'
                 enterKeyHint='next'
@@ -450,7 +450,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 value={value?.toString()}
                 onChangeText={onChange}
                 style={sInput.line}
-                placeholderTextColor={colors.gray.loading}
+                placeholderTextColor={colors.gray.hard}
                 keyboardType='number-pad'
                 placeholder='1 - 31'
                 enterKeyHint='done'
@@ -486,7 +486,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
               <ToggleSwitch onChange={onChange} value={value} />
             )}
           />
-          <TouchableHighlight onPress={onSubmit} underlayColor={colors.gray.loading} style={[sButton.fill, spacing.mt20]} disabled={isPending}>
+          <TouchableHighlight onPress={onSubmit} underlayColor={colors.gray.hard} style={[sButton.fill, spacing.mt20]} disabled={isPending}>
             <View style={[sContainer.rowCenter, spacing.gap10]}>
               {isPending && <ActivityIndicator size={24} color={colors.white} />}
               <Text style={sButton.filltextLarge}>

@@ -32,7 +32,7 @@ export default function Skeleton(props: Props) {
       style={[
         props.style,
         {
-          backgroundColor: colors.gray.loading,
+          backgroundColor: colors.gray.hard,
           opacity: anim.interpolate({
             inputRange: [0, 1, 2],
             outputRange: [0.3, 0.8, 0.3]
