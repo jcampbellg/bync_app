@@ -238,7 +238,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
   })
 
   const goBack = () => {
-    props.navigation.navigate('Dashboard')
+    props.navigation.goBack()
   }
 
   return (

@@ -58,7 +58,12 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
         <View>
           <View style={[sContainer.rowBetween, spacing.p20, spacing.gap20]}>
             <Skeleton delay={100} style={{ height: 14, flex: 1 }} />
-            <Skeleton delay={200} style={{ height: 14, flex: 1 }} />
+            <Skeleton delay={100} style={{ height: 14, flex: 1 }} />
+          </View>
+          <View style={[sContainer.rowBetween, spacing.p20, spacing.gap20]}>
+            <Skeleton delay={200} style={{ height: 40, width: 100 }} />
+            <Skeleton delay={200} style={{ height: 40, width: 100 }} />
+            <Skeleton delay={200} style={{ height: 40, width: 100 }} />
           </View>
           <View style={sContainer.rowCenter}>
             <Skeleton delay={300} style={{ height: 48, width: 100 }} />
@@ -90,6 +95,34 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
             this month ▼
           </Text>
         </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20, spacing.pb20]}>
+            <View style={[sButton.pill]}>
+              <Text style={sButton.pillLabel}>
+                Description
+              </Text>
+              <Text style={sButton.pillText}>
+                {accountSelected?.description}
+              </Text>
+            </View>
+            <View style={[sButton.pill]}>
+              <Text style={sButton.pillLabel}>
+                Notes
+              </Text>
+              <Text style={sButton.pillText}>
+                {accountSelected?.notes || 'No Notes'}
+              </Text>
+            </View>
+            <View style={[sButton.pill]}>
+              <Text style={sButton.pillLabel}>
+                Month Start
+              </Text>
+              <Text style={sButton.pillText}>
+                {accountSelected?.startDate}
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
         <View style={sContainer.rowCenter}>
           <Text style={[sText.bigNumber]}>
             {
@@ -98,7 +131,7 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
           </Text>
           <Text style={sText.subtitle}>
             {
-              noAccount ? 'N/A' : 'USD'
+              noAccount ? 'N/A' : 'USD ▼'
             }
           </Text>
         </View>
@@ -131,7 +164,7 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
               !noAccount && (
                 <>
                   <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
-                    <Text style={sButton.outlineText}>Edit Account</Text>
+                    <Text style={sButton.outlineText}>New Currency</Text>
                   </TouchableHighlight>
                   <TouchableHighlight onPress={onDeleteWarning} onLongPress={deleteAccount} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
                     <Text style={[sButton.outlineText, sText.red]}>Delete Account</Text>

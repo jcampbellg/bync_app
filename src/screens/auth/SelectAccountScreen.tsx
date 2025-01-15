@@ -24,6 +24,11 @@ export default function SelectAccountScreen(props: NativeStackScreenProps<AuthSt
     setState({ accountSelected: acc })
     props.navigation.navigate('Dashboard')
   }
+
+  const goToNewAccount = () => {
+    props.navigation.navigate('NewAccount')
+  }
+
   return (
     <View style={sContainer.flexWhite}>
       <View style={[sContainer.rowBetween, spacing.p20]}>
@@ -46,6 +51,11 @@ export default function SelectAccountScreen(props: NativeStackScreenProps<AuthSt
             </TouchableOpacity>
           ))
         }
+        <TouchableOpacity onPress={goToNewAccount} style={[spacing.p20]}>
+          <Text style={sText.bigNumber}>
+            New Account
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   )
