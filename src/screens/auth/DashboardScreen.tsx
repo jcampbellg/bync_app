@@ -11,7 +11,7 @@ import useAccountDeleteMutation from '../../apis/account/useAccountDeleteMutatio
 import numbro from 'numbro'
 
 export default function DashboardScreen(props: NativeStackScreenProps<AuthStackScreens, 'Dashboard'>) {
-  const { accountSelected, accountsQuery, accountQuery, setState } = useAuthState()
+  const { accountSelected, accountsQuery, accountQuery, setState, timespan } = useAuthState()
 
   const deleteMutation = useAccountDeleteMutation(accountSelected?.id || 0, {
     onMutate: () => {
@@ -46,6 +46,12 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
         textColor: colors.error,
         onPress: deleteAccount
       }
+    })
+  }
+
+  const onTimespanChange = () => {
+    setState({
+      timespan: timespan === 'this month' ? 'last two months' : timespan === 'last two months' ? 'this year' : 'this month'
     })
   }
 
@@ -96,9 +102,11 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
               {accountSelected?.description || 'No account selected'} ▼
             </Text>
           </TouchableOpacity>
-          <Text style={sText.subtitle}>
-            this month ▼
-          </Text>
+          <TouchableOpacity onPress={onTimespanChange}>
+            <Text style={sText.subtitle}>
+              {timespan} ▼
+            </Text>
+          </TouchableOpacity>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20, spacing.pb20]}>
@@ -189,7 +197,7 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
 }
 
 function Balance(props: NativeStackScreenProps<AuthStackScreens, 'Dashboard'>) {
-  const { accountSelected, currencySelected, balanceQuery, setState, showBalance } = useAuthState()
+  const { accountSelected, currencySelected, balanceQuery, setState, showBalance, timespan } = useAuthState()
   const noAccount = !accountSelected
 
   const goToCurrency = () => {
@@ -224,7 +232,7 @@ function Balance(props: NativeStackScreenProps<AuthStackScreens, 'Dashboard'>) {
       </View>
       <TouchableOpacity onPress={toggleBalance} style={[spacing.p10]}>
         <Text style={[sText.subtitle, sText.center]}>
-          {showBalance ? 'Balance ▼' : 'Total This Month ▼'}
+          {showBalance ? 'Balance ▼' : `Total ${timespan} ▼`}
         </Text>
       </TouchableOpacity>
     </View>

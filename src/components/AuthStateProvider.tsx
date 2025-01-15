@@ -8,6 +8,7 @@ const initialValue = {
   accountSelected: null as Account | null,
   currencySelected: null as string | null,
   showBalance: true,
+  timespan: 'this month' as 'this month' | 'last two months' | 'this year',
 }
 
 type AuthState = typeof initialValue
