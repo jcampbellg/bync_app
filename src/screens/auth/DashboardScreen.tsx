@@ -1,7 +1,7 @@
-import { processColor, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
+import { Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthStackScreens } from '../../components/AuthNavigation'
-import { bg, border, sButton, sContainer, sGraph, spacing, sText } from '../../utils/styles'
+import { border, sButton, sContainer, sGraph, spacing, sText } from '../../utils/styles'
 import { useAuthState } from '../../components/AuthStateProvider'
 import { colors } from '../../utils/constants'
 import { ScrollView } from 'react-native-gesture-handler'
@@ -9,24 +9,30 @@ import Skeleton from '../../components/ui/Skeleton'
 import Snackbar from 'react-native-snackbar'
 import useAccountDeleteMutation from '../../apis/account/useAccountDeleteMutation'
 import numbro from 'numbro'
+import useAccountQuery from '../../apis/account/useAccountQuery'
+import useAccountBalanceQuery from '../../apis/account/useAccountBalanceQuery'
+import FA5Icon from 'react-native-vector-icons/FontAwesome5'
+import dayts from '../../utils/dayts'
 
-export default function DashboardScreen(props: NativeStackScreenProps<AuthStackScreens, 'Dashboard'>) {
-  const { accountSelected, accountsQuery, accountQuery, setState, timespan } = useAuthState()
+type Props = NativeStackScreenProps<AuthStackScreens, 'Dashboard'>
 
-  const deleteMutation = useAccountDeleteMutation(accountSelected?.id || 0, {
-    onMutate: () => {
-      setState({ accountSelected: null })
-    },
+export default function DashboardScreen(props: Props) {
+  const { setState, timespan } = useAuthState()
+
+  const accountId = props.route.params.accountId
+
+  const deleteMutation = useAccountDeleteMutation(accountId, {
     onSuccess: () => {
       Snackbar.show({
         text: 'Account Deleted',
         duration: Snackbar.LENGTH_SHORT,
         marginBottom: 20
       })
+      props.navigation.navigate('DashboardNoAccount')
     }
   })
 
-  const noAccount = !accountSelected
+  const accountQuery = useAccountQuery(accountId)
 
   const goToNewAccount = () => {
     props.navigation.navigate('NewAccount')
@@ -59,7 +65,10 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
     deleteMutation.mutate()
   }
 
-  if (accountsQuery.isLoading || accountQuery.isLoading) {
+  const account = accountQuery.data?.account
+
+
+  if (accountQuery.isLoading || !account) {
     return (
       <View style={[sContainer.flexWhite]}>
         <View>
@@ -99,7 +108,7 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
         <View style={[sContainer.rowBetween, spacing.p20]}>
           <TouchableOpacity onPress={goToSelectAccount}>
             <Text style={sText.subtitle}>
-              {accountSelected?.description || 'No account selected'} ▼
+              {account.description} ▼
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={onTimespanChange}>
@@ -115,7 +124,7 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
                 Description
               </Text>
               <Text style={sButton.pillText}>
-                {accountSelected?.description}
+                {account.description}
               </Text>
             </View>
             <View style={[sButton.pill]}>
@@ -123,7 +132,7 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
                 Notes
               </Text>
               <Text style={sButton.pillText}>
-                {accountSelected?.notes || 'No Notes'}
+                {account.notes || 'No Notes'}
               </Text>
             </View>
             <View style={[sButton.pill]}>
@@ -131,12 +140,12 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
                 Month Start
               </Text>
               <Text style={sButton.pillText}>
-                {accountSelected?.startDate}
+                {account.startDate}
               </Text>
             </View>
           </View>
         </ScrollView>
-        <Balance {...props} />
+        <Balance {...props} accountQuery={accountQuery} />
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[sContainer.flex]}>
         <View style={[sContainer.rowEnd, spacing.p20, spacing.gap10]}>
@@ -162,33 +171,21 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20]}>
-            {
-              !noAccount && (
-                <>
-                  <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
-                    <Text style={sButton.outlineText}>+ Transaction</Text>
-                  </TouchableHighlight>
-                  <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
-                    <Text style={sButton.outlineText}>+ Debt</Text>
-                  </TouchableHighlight>
-                </>
-              )
-            }
+            <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
+              <Text style={sButton.outlineText}>+ Transaction</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
+              <Text style={sButton.outlineText}>+ Debt</Text>
+            </TouchableHighlight>
             <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
               <Text style={sButton.outlineText}>New Account</Text>
             </TouchableHighlight>
-            {
-              !noAccount && (
-                <>
-                  <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
-                    <Text style={sButton.outlineText}>New Currency</Text>
-                  </TouchableHighlight>
-                  <TouchableHighlight onPress={onDeleteWarning} onLongPress={deleteAccount} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
-                    <Text style={[sButton.outlineText, sText.red]}>Delete Account</Text>
-                  </TouchableHighlight>
-                </>
-              )
-            }
+            <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
+              <Text style={sButton.outlineText}>New Currency</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={onDeleteWarning} onLongPress={deleteAccount} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
+              <Text style={[sButton.outlineText, sText.red]}>Delete Account</Text>
+            </TouchableHighlight>
           </View>
         </ScrollView>
       </View>
@@ -196,14 +193,17 @@ export default function DashboardScreen(props: NativeStackScreenProps<AuthStackS
   )
 }
 
-function Balance(props: NativeStackScreenProps<AuthStackScreens, 'Dashboard'>) {
-  const { accountSelected, currencySelected, balanceQuery, setState, showBalance, timespan } = useAuthState()
-  const noAccount = !accountSelected
+type BalanceProps = Props & {
+  accountQuery: ReturnType<typeof useAccountQuery>
+}
+
+function Balance(props: BalanceProps) {
+  const { currencySelected, setState, showBalance, timespan } = useAuthState()
+
+  const accountId = props.route.params.accountId
 
   const goToCurrency = () => {
-    if (noAccount) return
-
-    props.navigation.navigate('SelectBalance')
+    props.navigation.navigate('SelectBalance', { accountId })
   }
 
   const toggleBalance = () => {
@@ -212,27 +212,39 @@ function Balance(props: NativeStackScreenProps<AuthStackScreens, 'Dashboard'>) {
     })
   }
 
-  const balance = balanceQuery.data?.balances.find(b => b.currency === currencySelected)
+  const balanceQuery = useAccountBalanceQuery(accountId)
+  const balance = balanceQuery.data?.balances.find(b => b.currency === currencySelected) || balanceQuery.data?.balances[0]
+
+  const isExpense = balance?.amount !== undefined && balance.amount < 0
+
+  const monthStart = props.accountQuery.data?.account.startDate
+
+  if (!monthStart) return null
+
+  const todayD = parseInt(dayts().format('D'))
+
+  const timespanThisMonth = `from ${todayD > monthStart - 1 ? dayts().format('MMM') : dayts().subtract(1, 'month').format('MMM')} ${monthStart} to date`
 
   return (
     <View>
       <View style={sContainer.rowCenter}>
+        {
+          isExpense ? <FA5Icon name='minus-circle' color={colors.expense} size={16} /> : <FA5Icon name='plus-circle' color={colors.income} size={16} />
+        }
         <Text style={[sText.bigNumber]}>
           {
-            noAccount ? 'N/A' : balance?.amount !== undefined ? numbro(balance.amount).format({ thousandSeparated: true, mantissa: 2 }) : 'N/A'
+            balance?.amount !== undefined ? numbro(Math.abs(balance.amount)).format({ thousandSeparated: true, mantissa: 2 }) : 'N/A'
           }
         </Text>
         <TouchableOpacity onPress={goToCurrency}>
           <Text style={sText.subtitle}>
-            {
-              noAccount ? 'N/A' : `${currencySelected} ▼`
-            }
+            {balance?.currency} ▼
           </Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={toggleBalance} style={[spacing.p10]}>
         <Text style={[sText.subtitle, sText.center]}>
-          {showBalance ? 'Balance ▼' : `Total ${timespan} ▼`}
+          {showBalance ? 'Balance ▼' : `Total ${timespan === 'this month' ? timespanThisMonth : timespan} ▼`}
         </Text>
       </TouchableOpacity>
     </View>

@@ -226,10 +226,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
 
   const { mutate, isPending, isError, error } = useAccountMutation({
     onSuccess: ({ account }) => {
-      setState({
-        accountSelected: account
-      })
-      props.navigation.navigate('Dashboard')
+      props.navigation.navigate('Dashboard', { accountId: account.id })
     }
   })
 

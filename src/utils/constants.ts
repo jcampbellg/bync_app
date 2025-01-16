@@ -11,4 +11,6 @@ export const colors = {
   white: '#fdfdfd',
   error: '#c1121f',
   success: '#1fc112',
+  expense: '#F44336',
+  income: '#4CAF50',
 }

@@ -11,25 +11,27 @@ export const sContainer = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent'
   },
-  alignEnd: {
-    flex: 1,
-    alignItems: 'flex-end',
-    backgroundColor: 'transparent'
-  },
   flex: {
     flex: 1,
+    backgroundColor: 'transparent'
+  },
+  row: {
+    flexDirection: 'row',
+    flex: 1,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'flex-start'
+  },
+  rowCenter: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'transparent'
   },
   rowEnd: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'flex-end',
-    backgroundColor: 'transparent'
-  },
-  rowCenter: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: 'transparent'
   },
   rowBetween: {
@@ -121,12 +123,6 @@ export const sButton = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Roboto'
   },
-  filltextLarge: {
-    color: colors.white,
-    fontSize: 24,
-    fontWeight: 'bold',
-    fontFamily: 'Roboto'
-  },
   outlineText: {
     color: colors.black,
     fontSize: 16,
@@ -166,7 +162,13 @@ export const sButton = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     width: '100%',
-  }
+  },
+  filltextLarge: {
+    color: colors.white,
+    fontSize: 24,
+    fontWeight: 'bold',
+    fontFamily: 'Roboto'
+  },
 })
 
 export const sText = StyleSheet.create({
@@ -252,26 +254,6 @@ export const sInput = StyleSheet.create({
     paddingHorizontal: 5,
     borderColor: colors.black,
     borderBottomWidth: 4
-  },
-  toggleSwitch: {
-    flexDirection: 'row',
-    width: 70,
-    color: colors.black,
-    backgroundColor: colors.white,
-    borderRadius: 35,
-    padding: 5,
-    elevation: 5,
-    shadowColor: colors.black,
-    shadowOffset: {
-      width: 0,
-      height: 10,
-    }
-  },
-  toggleSwitchCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 30,
-    backgroundColor: colors.gray.medium
   }
 })
 
@@ -285,11 +267,11 @@ export const spacing = StyleSheet.create({
   mb10: {
     marginBottom: 10
   },
-  p10: {
-    padding: 10
-  },
   p20: {
     padding: 20
+  },
+  p10: {
+    padding: 10
   },
   ph20: {
     paddingHorizontal: 20
@@ -332,7 +314,9 @@ export const border = StyleSheet.create({
 
 export const sGraph = StyleSheet.create({
   bar: {
+    width: 50,
     backgroundColor: colors.gray.medium,
-    width: 100
+    borderRadius: 5,
+    marginHorizontal: 5
   }
 })

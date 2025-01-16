@@ -1,16 +1,8 @@
-import { Text, TouchableOpacity, View, TextInput, Animated, useAnimatedValue, Easing, ActivityIndicator } from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthStackScreens } from '../../components/AuthNavigation'
-import KeyboardView from '../../components/KeyboardView'
-import { bg, border, sButton, sContainer, sInput, spacing, sText } from '../../utils/styles'
-import { colors } from '../../utils/constants'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { amountWith0Validation, dateNumberValidation, descriptionValidation, notesValidation, symbolValidation } from '../../utils/validation'
-import { Controller, useForm } from 'react-hook-form'
-import { useRef } from 'react'
+import { sContainer, spacing, sText } from '../../utils/styles'
 import { ScrollView } from 'react-native-gesture-handler'
-import useAccountMutation from '../../apis/account/useAccountMutation'
 import { useAuthState } from '../../components/AuthStateProvider'
 import { Account } from '../../utils/dbTypes'
 
@@ -21,8 +13,7 @@ export default function SelectAccountScreen(props: NativeStackScreenProps<AuthSt
   }
 
   const onSelectAccount = (acc: Account) => {
-    setState({ accountSelected: acc })
-    props.navigation.navigate('Dashboard')
+    props.navigation.navigate('Dashboard', { accountId: acc.id })
   }
 
   const goToNewAccount = () => {

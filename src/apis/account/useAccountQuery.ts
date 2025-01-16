@@ -8,15 +8,12 @@ export type AccountGetData = {
 
 type QueryProps = Omit<UseQueryOptions<AccountGetData>, 'queryKey' | 'queryFn'>
 
-export default function useAccountQuery(id: number | null, props: QueryProps = {}) {
+export default function useAccountQuery(id: number, props: QueryProps = {}) {
   const { key, baseUrl, isLogin } = useRoot()
 
   const query = useQuery({
     queryKey: ['account', id],
     queryFn: async () => {
-      if (id === null) {
-        return Promise.resolve({ account: null })
-      }
       const url = baseUrl + `/api/account/${id}`
 
       const response = await fetch(url, {
@@ -35,7 +32,7 @@ export default function useAccountQuery(id: number | null, props: QueryProps = {
       const data = await response.json()
       return data
     },
-    enabled: !!isLogin && !!id,
+    enabled: !!isLogin,
     ...props,
   })
 
