@@ -1,33 +1,32 @@
 import { Text, TouchableOpacity, View, TextInput, Animated, useAnimatedValue, Easing, ActivityIndicator, TouchableHighlight } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { AuthStackScreens } from '../../components/AuthNavigation'
-import KeyboardView from '../../components/KeyboardView'
-import { bg, sButton, sContainer, sInput, spacing, sText } from '../../utils/styles'
-import { colors } from '../../utils/constants'
+import { AuthStackScreens } from '../../../../components/AuthNavigation'
+import KeyboardView from '../../../../components/KeyboardView'
+import { bg, sButton, sContainer, sInput, spacing, sText } from '../../../../utils/styles'
+import { colors } from '../../../../utils/constants'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { amountWith0Validation, dateNumberValidation, descriptionValidation, notesValidation, symbolValidation } from '../../utils/validation'
+import { amountWith0Validation, symbolValidation } from '../../../../utils/validation'
 import { Controller, useForm } from 'react-hook-form'
 import { useRef } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
-import useAccountMutation from '../../apis/account/useAccountMutation'
-import { useAuthState } from '../../components/AuthStateProvider'
-import ToggleSwitch from '../../components/ui/ToggleSwitch'
+import useAccountMutation from '../../../../apis/account/useAccountMutation'
+import { useAuthState } from '../../../../components/AuthStateProvider'
+import ToggleSwitch from '../../../../components/ui/ToggleSwitch'
+import useAccountBalanceMutation from '../../../../apis/account/useAccountBalanceMutation'
 
 const schema = z.object({
-  description: descriptionValidation,
-  notes: notesValidation,
   currency: symbolValidation,
-  amount: amountWith0Validation,
-  startDate: dateNumberValidation,
-  isDefault: z.boolean()
+  amount: amountWith0Validation
 })
 
-export type NewAccountForm = z.infer<typeof schema>
+export type NewBalanceForm = z.infer<typeof schema>
 
 const resolver = zodResolver(schema)
 
-export default function NewAccountScreen(props: NativeStackScreenProps<AuthStackScreens, 'NewAccount'>) {
+export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStackScreens, 'NewBalance'>) {
+  const accountId = props.route.params.accountId
+
   const anim = {
     pill: {
       description: useAnimatedValue(0),
@@ -64,7 +63,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     startDate: useRef<TextInput>(null)
   }
 
-  const methods = useForm<NewAccountForm>({
+  const methods = useForm<NewBalanceForm>({
     resolver,
     mode: 'onChange'
   })
@@ -224,13 +223,14 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     }).start()
   }
 
-  const { mutate, isPending, isError, error } = useAccountMutation({
-    onSuccess: ({ account }) => {
-      props.navigation.navigate('Dashboard', { accountId: account.id })
+  const { mutate, isPending } = useAccountBalanceMutation(accountId, {
+    onSuccess: ({ balance }) => {
+      setState({ currencySelected: balance.currency })
+      props.navigation.navigate('Dashboard', { accountId })
     }
   })
 
-  const onSubmit = handleSubmit((data: NewAccountForm) => {
+  const onSubmit = handleSubmit((data: NewBalanceForm) => {
     mutate(data)
   })
 

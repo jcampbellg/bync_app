@@ -1,9 +1,9 @@
 import { Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { AuthStackScreens } from '../../components/AuthNavigation'
-import { sButton, sContainer, sGraph, spacing, sText } from '../../utils/styles'
-import { useAuthState } from '../../components/AuthStateProvider'
-import { colors } from '../../utils/constants'
+import { AuthStackScreens } from '../../../components/AuthNavigation'
+import { sButton, sContainer, sGraph, spacing, sText } from '../../../utils/styles'
+import { useAuthState } from '../../../components/AuthStateProvider'
+import { colors } from '../../../utils/constants'
 import { ScrollView } from 'react-native-gesture-handler'
 
 type Props = NativeStackScreenProps<AuthStackScreens, 'DashboardNoAccount'>

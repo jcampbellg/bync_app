@@ -1,13 +1,13 @@
 import { Text, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { AuthStackScreens } from '../../components/AuthNavigation'
-import { sContainer, spacing, sText } from '../../utils/styles'
+import { AuthStackScreens } from '../../../../components/AuthNavigation'
+import { sContainer, spacing, sText } from '../../../../utils/styles'
 import { ScrollView } from 'react-native-gesture-handler'
-import { useAuthState } from '../../components/AuthStateProvider'
-import useAccountBalanceQuery from '../../apis/account/useAccountBalanceQuery'
+import { useAuthState } from '../../../../components/AuthStateProvider'
+import useAccountBalanceQuery from '../../../../apis/account/useAccountBalanceQuery'
 import numbro from 'numbro'
 import FA5Icon from 'react-native-vector-icons/FontAwesome5'
-import { colors } from '../../utils/constants'
+import { colors } from '../../../../utils/constants'
 
 export default function SelectBalanceScreen(props: NativeStackScreenProps<AuthStackScreens, 'SelectBalance'>) {
   const { setState } = useAuthState()
@@ -24,8 +24,8 @@ export default function SelectBalanceScreen(props: NativeStackScreenProps<AuthSt
     props.navigation.navigate('Dashboard', { accountId })
   }
 
-  const goToNewAccount = () => {
-    props.navigation.navigate('NewAccount')
+  const goToNewBalance = () => {
+    props.navigation.navigate('NewBalance', { accountId })
   }
 
   return (
@@ -61,7 +61,7 @@ export default function SelectBalanceScreen(props: NativeStackScreenProps<AuthSt
             )
           })
         }
-        <TouchableOpacity onPress={goToNewAccount} style={[spacing.p20]}>
+        <TouchableOpacity onPress={goToNewBalance} style={[spacing.p20]}>
           <Text style={sText.bigNumber}>
             New Currency
           </Text>

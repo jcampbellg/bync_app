@@ -1,12 +1,11 @@
 import { NavigationContainer } from '@react-navigation/native'
-import { useRoot } from '../screens/Root'
 import { createStackNavigator } from '@react-navigation/stack'
-import DashboardScreen from '../screens/auth/DashboardScreen'
+import DashboardScreen from '../screens/auth/Account/DashboardScreen'
 import AuthStateProvider, { useAuthState } from './AuthStateProvider'
-import NewAccountScreen from '../screens/auth/NewAccountScreen'
-import SelectAccountScreen from '../screens/auth/SelectAccountScreen'
-import SelectBalanceScreen from '../screens/auth/SelectBalanceScreen'
-import DashboardNoAccountScreen from '../screens/auth/DashboardNoAccountScreen'
+import NewAccountScreen from '../screens/auth/Account/New/NewAccountScreen'
+import SelectAccountScreen from '../screens/auth/Account/Select/SelectAccountScreen'
+import SelectBalanceScreen from '../screens/auth/Account/Select/SelectBalanceScreen'
+import DashboardNoAccountScreen from '../screens/auth/Account/DashboardNoAccountScreen'
 import { sContainer } from '../utils/styles'
 import { ActivityIndicator, Text, View } from 'react-native'
 import { colors } from '../utils/constants'
@@ -17,6 +16,7 @@ export type AuthStackScreens = {
   NewAccount: undefined
   SelectAccount: undefined
   SelectBalance: { accountId: number }
+  NewBalance: { accountId: number }
 }
 
 const AuthStack = createStackNavigator<AuthStackScreens>()
@@ -42,8 +42,6 @@ function Navigation() {
   }
 
   const defaultAccountId = accountsQuery.data?.accounts.find(a => a.isDefault)?.id || accountsQuery.data?.accounts[0]?.id
-
-  console.log('defaultAccountId', defaultAccountId)
 
   return (
     <NavigationContainer>

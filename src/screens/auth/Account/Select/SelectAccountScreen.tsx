@@ -1,10 +1,10 @@
 import { Text, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { AuthStackScreens } from '../../components/AuthNavigation'
-import { sContainer, spacing, sText } from '../../utils/styles'
+import { AuthStackScreens } from '../../../../components/AuthNavigation'
+import { sContainer, spacing, sText } from '../../../../utils/styles'
 import { ScrollView } from 'react-native-gesture-handler'
-import { useAuthState } from '../../components/AuthStateProvider'
-import { Account } from '../../utils/dbTypes'
+import { useAuthState } from '../../../../components/AuthStateProvider'
+import { Account } from '../../../../utils/dbTypes'
 
 export default function SelectAccountScreen(props: NativeStackScreenProps<AuthStackScreens, 'SelectAccount'>) {
   const { accountsQuery, setState } = useAuthState()
