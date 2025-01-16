@@ -1,20 +1,19 @@
 import { useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query'
 import { useRoot } from '../../screens/Root'
 import { Balance } from '../../utils/dbTypes'
-import { NewBalanceForm } from '../../screens/auth/Account/New/NewBalanceScreen'
 
-type QueryProps = Omit<UseMutationOptions<{ balance: Balance }, Error, NewBalanceForm>, 'queryKey' | 'queryFn'>
+type QueryProps = Omit<UseMutationOptions<{ balance: Balance }, Error, { id: number }>, 'queryKey' | 'queryFn'>
 
-export default function useAccountBalanceMutation(id: number, { onSuccess, ...props }: QueryProps = {}) {
+export default function useAccountBalanceDeleteMutation(id: number, { onSuccess, ...props }: QueryProps = {}) {
   const queryClient = useQueryClient()
   const { key, baseUrl } = useRoot()
 
   const query = useMutation({
-    mutationFn: async (params: NewBalanceForm) => {
+    mutationFn: async (params: { id: number }) => {
       const url = baseUrl + `/api/account/${id}/balance`
 
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${key}`
@@ -24,7 +23,7 @@ export default function useAccountBalanceMutation(id: number, { onSuccess, ...pr
 
       if (!response.ok) {
         const error = await response.json()
-        console.error(`error in useAccountBalanceMutation:`, error)
+        console.error(`error in useAccountBalanceDeleteMutation:`, error)
         return Promise.reject(error)
       }
       const data = await response.json()

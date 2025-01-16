@@ -9,6 +9,7 @@ import DashboardNoAccountScreen from '../screens/auth/Account/DashboardNoAccount
 import { sContainer } from '../utils/styles'
 import { ActivityIndicator, Text, View } from 'react-native'
 import { colors } from '../utils/constants'
+import NewBalanceScreen from '../screens/auth/Account/New/NewBalanceScreen'
 
 export type AuthStackScreens = {
   Dashboard: { accountId: number }
@@ -72,6 +73,15 @@ function Navigation() {
             <AuthStack.Screen
               name='SelectBalance'
               component={SelectBalanceScreen}
+              initialParams={{ accountId: defaultAccountId }}
+            />
+          )
+        }
+        {
+          !!defaultAccountId && (
+            <AuthStack.Screen
+              name='NewBalance'
+              component={NewBalanceScreen}
               initialParams={{ accountId: defaultAccountId }}
             />
           )

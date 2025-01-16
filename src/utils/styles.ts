@@ -254,6 +254,26 @@ export const sInput = StyleSheet.create({
     paddingHorizontal: 5,
     borderColor: colors.black,
     borderBottomWidth: 4
+  },
+  toggleSwitch: {
+    flexDirection: 'row',
+    width: 70,
+    color: colors.black,
+    backgroundColor: colors.white,
+    borderRadius: 35,
+    padding: 5,
+    elevation: 5,
+    shadowColor: colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    }
+  },
+  toggleSwitchCircle: {
+    width: 30,
+    height: 30,
+    borderRadius: 30,
+    backgroundColor: colors.gray.medium
   }
 })
 

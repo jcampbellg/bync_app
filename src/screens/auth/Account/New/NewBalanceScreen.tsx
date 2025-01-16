@@ -10,10 +10,9 @@ import { amountWith0Validation, symbolValidation } from '../../../../utils/valid
 import { Controller, useForm } from 'react-hook-form'
 import { useRef } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
-import useAccountMutation from '../../../../apis/account/useAccountMutation'
 import { useAuthState } from '../../../../components/AuthStateProvider'
-import ToggleSwitch from '../../../../components/ui/ToggleSwitch'
 import useAccountBalanceMutation from '../../../../apis/account/useAccountBalanceMutation'
+import useAccountQuery from '../../../../apis/account/useAccountQuery'
 
 const schema = z.object({
   currency: symbolValidation,
@@ -27,40 +26,25 @@ const resolver = zodResolver(schema)
 export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStackScreens, 'NewBalance'>) {
   const accountId = props.route.params.accountId
 
+  const accountQuery = useAccountQuery(accountId)
+
+  if (accountQuery.isLoading || !accountQuery.data) {
+    return null
+  }
+
   const anim = {
-    pill: {
-      description: useAnimatedValue(0),
-      notes: useAnimatedValue(0),
-      currency: useAnimatedValue(0),
-      amount: useAnimatedValue(0),
-      startDate: useAnimatedValue(0),
-      isDefault: useAnimatedValue(0),
-      loading: useAnimatedValue(0)
-    },
     opacity: {
-      description: useAnimatedValue(1),
-      notes: useAnimatedValue(0),
-      currency: useAnimatedValue(0),
+      currency: useAnimatedValue(1),
       amount: useAnimatedValue(0),
-      startDate: useAnimatedValue(0),
-      isDefault: useAnimatedValue(0),
-      loading: useAnimatedValue(0)
     },
     position: {
-      notes: useAnimatedValue(220),
-      currency: useAnimatedValue(220),
       amount: useAnimatedValue(220),
-      startDate: useAnimatedValue(220),
-      isDefault: useAnimatedValue(220),
-      loading: useAnimatedValue(220)
     }
   }
 
   const refs = {
-    notes: useRef<TextInput>(null),
     currency: useRef<TextInput>(null),
     amount: useRef<TextInput>(null),
-    startDate: useRef<TextInput>(null)
   }
 
   const methods = useForm<NewBalanceForm>({
@@ -72,75 +56,9 @@ export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStack
 
   const { control, formState: { errors }, handleSubmit } = methods
 
-  const goToNotes = () => {
-    if (!!errors.description) return
-
-    Animated.timing(anim.pill.description, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.description, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.notes, {
-      toValue: 80,
-      duration: 300,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.position.notes, {
-      toValue: 0,
-      duration: 300,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-    refs.notes.current?.focus()
-  }
-
-  const goToCurrency = () => {
-    if (!!errors.notes) return
-
-    Animated.timing(anim.pill.notes, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.notes, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.currency, {
-      toValue: 80,
-      duration: 300,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.position.currency, {
-      toValue: 0,
-      duration: 300,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-    refs.currency.current?.focus()
-  }
-
   const goToAmount = () => {
     if (!!errors.currency) return
 
-    Animated.timing(anim.pill.currency, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
     Animated.timing(anim.opacity.currency, {
       toValue: 0,
       duration: 200,
@@ -161,66 +79,6 @@ export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStack
     }).start()
 
     refs.amount.current?.focus()
-  }
-
-  const goToStartDate = () => {
-    if (!!errors.amount) return
-
-    Animated.timing(anim.pill.amount, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.amount, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.startDate, {
-      toValue: 80,
-      duration: 300,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.position.startDate, {
-      toValue: 0,
-      duration: 300,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-
-    refs.startDate.current?.focus()
-  }
-
-  const goToIsDefault = () => {
-    if (!!errors.startDate) return
-
-    Animated.timing(anim.pill.startDate, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.startDate, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.isDefault, {
-      toValue: 80,
-      duration: 300,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.position.isDefault, {
-      toValue: 0,
-      duration: 300,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
   }
 
   const { mutate, isPending } = useAccountBalanceMutation(accountId, {
@@ -244,123 +102,36 @@ export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStack
         <View style={[sContainer.rowBetween, spacing.p20]}>
           <TouchableOpacity disabled={isPending} onPress={goBack}>
             <Text style={sText.subtitle}>
-              ◀ New Account
+              ◀ New Balance
             </Text>
           </TouchableOpacity>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20, spacing.pb20]}>
-            <Animated.View style={[sButton.pill, { opacity: anim.pill.description }]}>
+            <View style={[sButton.pill]}>
               <Text style={sButton.pillLabel}>
                 Description
               </Text>
               <Text style={sButton.pillText}>
-                {methods.watch('description')}
+                {accountQuery.data.account.description}
               </Text>
-            </Animated.View>
-            <Animated.View style={[sButton.pill, { opacity: anim.pill.notes }]}>
+            </View>
+            <View style={[sButton.pill]}>
               <Text style={sButton.pillLabel}>
                 Notes
               </Text>
               <Text style={sButton.pillText}>
-                {methods.watch('notes') || 'No Notes'}
+                {accountQuery.data.account.notes || 'No Notes'}
               </Text>
-            </Animated.View>
-            <Animated.View style={[sButton.pill, { opacity: anim.pill.currency }]}>
-              <Text style={sButton.pillLabel}>
-                Currency
-              </Text>
-              <Text style={sButton.pillText}>
-                {methods.watch('currency')}
-              </Text>
-            </Animated.View>
-            <Animated.View style={[sButton.pill, { opacity: anim.pill.amount }]}>
-              <Text style={sButton.pillLabel}>
-                Balance
-              </Text>
-              <Text style={sButton.pillText}>
-                {methods.watch('amount')}
-              </Text>
-            </Animated.View>
-            <Animated.View style={[sButton.pill, { opacity: anim.pill.startDate }]}>
-              <Text style={sButton.pillLabel}>
-                Month Start
-              </Text>
-              <Text style={sButton.pillText}>
-                {methods.watch('startDate')}
-              </Text>
-            </Animated.View>
+            </View>
           </View>
         </ScrollView>
-        <Animated.View style={[spacing.p20, {
-          width: '100%',
-          opacity: anim.opacity.description,
-          position: 'absolute',
-          top: 80
-        }]}>
-          <Text style={[sText.bigNumber]}>
-            Account Description
-          </Text>
-          <Controller
-            control={control}
-            name='description'
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                value={value}
-                onChangeText={onChange}
-                style={sInput.line}
-                placeholderTextColor={colors.gray.hard}
-                onSubmitEditing={goToNotes}
-                placeholder='Type here...'
-                enterKeyHint='next'
-                submitBehavior='submit'
-              />
-            )}
-          />
-          <Text style={[sText.error, spacing.mt10]}>
-            {errors.description?.message}
-          </Text>
-        </Animated.View>
-        {/* Notes */}
-        <Animated.View style={[spacing.p20, {
-          width: '100%',
-          opacity: anim.opacity.notes,
-          position: 'absolute',
-          top: 80,
-          transform: [{ translateY: anim.position.notes }]
-        }]
-        }>
-          <Text style={[sText.bigNumber]}>
-            Notes
-          </Text>
-          <Controller
-            control={control}
-            name='notes'
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                ref={refs.notes}
-                value={value}
-                onChangeText={onChange}
-                style={sInput.line}
-                placeholderTextColor={colors.gray.hard}
-                placeholder='(Optional) Type here...'
-                enterKeyHint='next'
-                submitBehavior='submit'
-                onSubmitEditing={goToCurrency}
-              />
-            )}
-          />
-          <Text style={[sText.error, spacing.mt10]}>
-            {errors.notes?.message}
-          </Text>
-        </Animated.View>
         {/* Currency */}
         <Animated.View style={[spacing.p20, {
           width: '100%',
           opacity: anim.opacity.currency,
           position: 'absolute',
-          top: 80,
-          transform: [{ translateY: anim.position.currency }]
+          top: 80
         }]
         }>
           <Text style={[sText.bigNumber]}>
@@ -416,78 +187,20 @@ export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStack
                 placeholderTextColor={colors.gray.hard}
                 keyboardType='number-pad'
                 placeholder='Type here...'
-                enterKeyHint='next'
-                submitBehavior='submit'
-                onSubmitEditing={goToStartDate}
+                enterKeyHint='done'
+                submitBehavior='blurAndSubmit'
+                onSubmitEditing={onSubmit}
               />
             )}
           />
           <Text style={[sText.error, spacing.mt10]}>
             {errors.amount?.message}
           </Text>
-        </Animated.View>
-        {/* Start Date */}
-        <Animated.View style={[spacing.p20, {
-          width: '100%',
-          opacity: anim.opacity.startDate,
-          position: 'absolute',
-          top: 80,
-          transform: [{ translateY: anim.position.startDate }]
-        }]
-        }>
-          <Text style={[sText.bigNumber]}>
-            Month Start
-          </Text>
-          <Controller
-            control={control}
-            name='startDate'
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                ref={refs.startDate}
-                value={value?.toString()}
-                onChangeText={onChange}
-                style={sInput.line}
-                placeholderTextColor={colors.gray.hard}
-                keyboardType='number-pad'
-                placeholder='1 - 31'
-                enterKeyHint='done'
-                submitBehavior='blurAndSubmit'
-                onSubmitEditing={goToIsDefault}
-              />
-            )}
-          />
-          <Text style={[sText.subtitle]}>
-            Data on the Dashboard will be displayed from this day of the month to the next
-          </Text>
-          <Text style={[sText.error, spacing.mt10]}>
-            {errors.startDate?.message}
-          </Text>
-        </Animated.View>
-        {/* Is Default */}
-        <Animated.View style={[spacing.p20, {
-          width: '100%',
-          opacity: anim.opacity.isDefault,
-          position: 'absolute',
-          top: 80,
-          transform: [{ translateY: anim.position.isDefault }]
-        }]
-        }>
-          <Text style={[sText.bigNumber]}>
-            Set as Default
-          </Text>
-          <Controller
-            control={control}
-            name='isDefault'
-            defaultValue={false}
-            render={({ field: { onChange, value } }) => (
-              <ToggleSwitch onChange={onChange} value={value} />
-            )}
-          />
           <TouchableHighlight onPress={onSubmit} underlayColor={colors.gray.hard} style={[sButton.fill, spacing.mt20]} disabled={isPending}>
             <View style={[sContainer.rowCenter, spacing.gap10]}>
               {isPending && <ActivityIndicator size={24} color={colors.white} />}
               <Text style={sButton.filltextLarge}>
-                Create Account
+                Create Currency
               </Text>
             </View>
           </TouchableHighlight>

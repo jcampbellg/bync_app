@@ -13,15 +13,16 @@ import useAccountQuery from '../../../apis/account/useAccountQuery'
 import useAccountBalanceQuery from '../../../apis/account/useAccountBalanceQuery'
 import FA5Icon from 'react-native-vector-icons/FontAwesome5'
 import dayts from '../../../utils/dayts'
+import useAccountBalanceDeleteMutation from '../../../apis/account/useAccountBalanceDeleteMutation'
 
 type Props = NativeStackScreenProps<AuthStackScreens, 'Dashboard'>
 
 export default function DashboardScreen(props: Props) {
-  const { setState, timespan } = useAuthState()
+  const { setState, timespan, currencySelected } = useAuthState()
 
   const accountId = props.route.params.accountId
 
-  const deleteMutation = useAccountDeleteMutation(accountId, {
+  const deleteAccountMutation = useAccountDeleteMutation(accountId, {
     onSuccess: () => {
       Snackbar.show({
         text: 'Account Deleted',
@@ -31,6 +32,20 @@ export default function DashboardScreen(props: Props) {
       props.navigation.navigate('DashboardNoAccount')
     }
   })
+
+  const deleteBalanceMutation = useAccountBalanceDeleteMutation(accountId, {
+    onSuccess: () => {
+      Snackbar.show({
+        text: 'Balance Deleted',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 20
+      })
+      props.navigation.navigate('Dashboard', { accountId })
+    }
+  })
+
+  const balanceQuery = useAccountBalanceQuery(accountId)
+  const balance = balanceQuery.data?.balances.find(b => b.currency === currencySelected) || balanceQuery.data?.balances[0]
 
   const accountQuery = useAccountQuery(accountId)
 
@@ -42,7 +57,29 @@ export default function DashboardScreen(props: Props) {
     props.navigation.navigate('SelectAccount')
   }
 
-  const onDeleteWarning = () => {
+  const goToNewCurrency = () => {
+    props.navigation.navigate('NewBalance', { accountId })
+  }
+
+  const onTimespanChange = () => {
+    setState({
+      timespan: timespan === 'this month' ? 'last two months' : timespan === 'last two months' ? 'this year' : 'this month'
+    })
+  }
+
+  const goToNewTransaction = () => {
+
+  }
+
+  const goToNewDebt = () => {
+
+  }
+
+  const goToEditBalance = () => {
+
+  }
+
+  const onDeleteAccountWarning = () => {
     Snackbar.show({
       text: 'Are you sure you want to delete this account?',
       duration: Snackbar.LENGTH_LONG,
@@ -55,18 +92,29 @@ export default function DashboardScreen(props: Props) {
     })
   }
 
-  const onTimespanChange = () => {
-    setState({
-      timespan: timespan === 'this month' ? 'last two months' : timespan === 'last two months' ? 'this year' : 'this month'
+  const deleteAccount = () => {
+    deleteAccountMutation.mutate()
+  }
+
+  const onDeleteBalanceWarning = () => {
+    Snackbar.show({
+      text: 'Are you sure you want to delete this currency for this account?',
+      duration: Snackbar.LENGTH_LONG,
+      marginBottom: 20,
+      action: {
+        text: 'YES',
+        textColor: colors.error,
+        onPress: deleteBalance
+      }
     })
   }
 
-  const deleteAccount = () => {
-    deleteMutation.mutate()
+  const deleteBalance = () => {
+    if (!balance) return
+    deleteBalanceMutation.mutate({ id: balance?.id })
   }
 
   const account = accountQuery.data?.account
-
 
   if (accountQuery.isLoading || !account) {
     return (
@@ -171,19 +219,25 @@ export default function DashboardScreen(props: Props) {
         </Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20]}>
-            <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
+            <TouchableHighlight onPress={goToNewTransaction} underlayColor={colors.gray.medium} style={sButton.outline}>
               <Text style={sButton.outlineText}>+ Transaction</Text>
             </TouchableHighlight>
-            <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
+            <TouchableHighlight onPress={goToNewDebt} underlayColor={colors.gray.medium} style={sButton.outline}>
               <Text style={sButton.outlineText}>+ Debt</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={goToEditBalance} underlayColor={colors.gray.medium} style={sButton.outline}>
+              <Text style={sButton.outlineText}>Edit Balance</Text>
             </TouchableHighlight>
             <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
               <Text style={sButton.outlineText}>New Account</Text>
             </TouchableHighlight>
-            <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
+            <TouchableHighlight onPress={goToNewCurrency} underlayColor={colors.gray.medium} style={sButton.outline}>
               <Text style={sButton.outlineText}>New Currency</Text>
             </TouchableHighlight>
-            <TouchableHighlight onPress={onDeleteWarning} onLongPress={deleteAccount} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
+            <TouchableHighlight onPress={onDeleteBalanceWarning} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
+              <Text style={[sButton.outlineText, sText.red]}>Delete Balance</Text>
+            </TouchableHighlight>
+            <TouchableHighlight onPress={onDeleteAccountWarning} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
               <Text style={[sButton.outlineText, sText.red]}>Delete Account</Text>
             </TouchableHighlight>
           </View>
