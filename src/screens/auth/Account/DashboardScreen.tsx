@@ -18,48 +18,11 @@ import useAccountBalanceDeleteMutation from '../../../apis/account/useAccountBal
 type Props = NativeStackScreenProps<AuthStackScreens, 'Dashboard'>
 
 export default function DashboardScreen(props: Props) {
-  const { setState, timespan, currencySelected } = useAuthState()
+  const { timespan, setState } = useAuthState()
 
-  const accountId = props.route.params.accountId
-
-  const deleteAccountMutation = useAccountDeleteMutation(accountId, {
-    onSuccess: () => {
-      Snackbar.show({
-        text: 'Account Deleted',
-        duration: Snackbar.LENGTH_SHORT,
-        marginBottom: 20
-      })
-      props.navigation.navigate('DashboardNoAccount')
-    }
-  })
-
-  const deleteBalanceMutation = useAccountBalanceDeleteMutation(accountId, {
-    onSuccess: () => {
-      Snackbar.show({
-        text: 'Balance Deleted',
-        duration: Snackbar.LENGTH_SHORT,
-        marginBottom: 20
-      })
-      props.navigation.navigate('Dashboard', { accountId })
-    }
-  })
-
-  const balanceQuery = useAccountBalanceQuery(accountId)
-  const balance = balanceQuery.data?.balances.find(b => b.currency === currencySelected) || balanceQuery.data?.balances[0]
-
-  const accountQuery = useAccountQuery(accountId)
-
-  const goToNewAccount = () => {
-    props.navigation.navigate('NewAccount')
-  }
-
-  const goToSelectAccount = () => {
-    props.navigation.navigate('SelectAccount')
-  }
-
-  const goToNewCurrency = () => {
-    props.navigation.navigate('NewBalance', { accountId })
-  }
+  const {
+    account, accountQuery
+  } = useData(props)
 
   const onTimespanChange = () => {
     setState({
@@ -67,54 +30,9 @@ export default function DashboardScreen(props: Props) {
     })
   }
 
-  const goToNewTransaction = () => {
-
+  const goToSelectAccount = () => {
+    props.navigation.navigate('SelectAccount')
   }
-
-  const goToNewDebt = () => {
-
-  }
-
-  const goToEditBalance = () => {
-
-  }
-
-  const onDeleteAccountWarning = () => {
-    Snackbar.show({
-      text: 'Are you sure you want to delete this account?',
-      duration: Snackbar.LENGTH_LONG,
-      marginBottom: 20,
-      action: {
-        text: 'YES',
-        textColor: colors.error,
-        onPress: deleteAccount
-      }
-    })
-  }
-
-  const deleteAccount = () => {
-    deleteAccountMutation.mutate()
-  }
-
-  const onDeleteBalanceWarning = () => {
-    Snackbar.show({
-      text: 'Are you sure you want to delete this currency for this account?',
-      duration: Snackbar.LENGTH_LONG,
-      marginBottom: 20,
-      action: {
-        text: 'YES',
-        textColor: colors.error,
-        onPress: deleteBalance
-      }
-    })
-  }
-
-  const deleteBalance = () => {
-    if (!balance) return
-    deleteBalanceMutation.mutate({ id: balance?.id })
-  }
-
-  const account = accountQuery.data?.account
 
   if (accountQuery.isLoading || !account) {
     return (
@@ -193,7 +111,7 @@ export default function DashboardScreen(props: Props) {
             </View>
           </View>
         </ScrollView>
-        <Balance {...props} accountQuery={accountQuery} />
+        <Balance {...props} />
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[sContainer.flex]}>
         <View style={[sContainer.rowEnd, spacing.p20, spacing.gap10]}>
@@ -213,48 +131,18 @@ export default function DashboardScreen(props: Props) {
           </View>
         </View>
       </ScrollView>
-      <View style={spacing.pb20}>
-        <Text style={[sText.subtitle, spacing.ph20, spacing.mb10]}>
-          Actions:
-        </Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20]}>
-            <TouchableHighlight onPress={goToNewTransaction} underlayColor={colors.gray.medium} style={sButton.outline}>
-              <Text style={sButton.outlineText}>+ Transaction</Text>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={goToNewDebt} underlayColor={colors.gray.medium} style={sButton.outline}>
-              <Text style={sButton.outlineText}>+ Debt</Text>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={goToEditBalance} underlayColor={colors.gray.medium} style={sButton.outline}>
-              <Text style={sButton.outlineText}>Edit Balance</Text>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
-              <Text style={sButton.outlineText}>New Account</Text>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={goToNewCurrency} underlayColor={colors.gray.medium} style={sButton.outline}>
-              <Text style={sButton.outlineText}>New Currency</Text>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={onDeleteBalanceWarning} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
-              <Text style={[sButton.outlineText, sText.red]}>Delete Balance</Text>
-            </TouchableHighlight>
-            <TouchableHighlight onPress={onDeleteAccountWarning} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
-              <Text style={[sButton.outlineText, sText.red]}>Delete Account</Text>
-            </TouchableHighlight>
-          </View>
-        </ScrollView>
-      </View>
+      <Actions {...props} />
     </View>
   )
 }
 
-type BalanceProps = Props & {
-  accountQuery: ReturnType<typeof useAccountQuery>
-}
+function Balance(props: Props) {
+  const { setState, showBalance, timespan } = useAuthState()
 
-function Balance(props: BalanceProps) {
-  const { currencySelected, setState, showBalance, timespan } = useAuthState()
+  const {
+    accountId, balance, account
+  } = useData(props)
 
-  const accountId = props.route.params.accountId
 
   const goToCurrency = () => {
     props.navigation.navigate('SelectBalance', { accountId })
@@ -266,12 +154,11 @@ function Balance(props: BalanceProps) {
     })
   }
 
-  const balanceQuery = useAccountBalanceQuery(accountId)
-  const balance = balanceQuery.data?.balances.find(b => b.currency === currencySelected) || balanceQuery.data?.balances[0]
+  if (!account) return null
 
   const isExpense = balance?.amount !== undefined && balance.amount < 0
 
-  const monthStart = props.accountQuery.data?.account.startDate
+  const monthStart = account.startDate
 
   if (!monthStart) return null
 
@@ -303,4 +190,139 @@ function Balance(props: BalanceProps) {
       </TouchableOpacity>
     </View>
   )
+}
+
+function Actions(props: Props) {
+  const {
+    accountId, balance, deleteAccountMutation, deleteBalanceMutation
+  } = useData(props)
+
+  const goToNewAccount = () => {
+    props.navigation.navigate('NewAccount')
+  }
+
+  const goToNewCurrency = () => {
+    props.navigation.navigate('NewBalance', { accountId })
+  }
+
+  const goToNewTransaction = () => {
+  }
+
+  const goToNewDebt = () => {
+  }
+
+  const goToEditBalance = () => {
+  }
+
+  const onDeleteAccountWarning = () => {
+    Snackbar.show({
+      text: 'Are you sure you want to delete this account?',
+      duration: Snackbar.LENGTH_LONG,
+      marginBottom: 20,
+      action: {
+        text: 'YES',
+        textColor: colors.error,
+        onPress: deleteAccount
+      }
+    })
+  }
+
+  const deleteAccount = () => {
+    deleteAccountMutation.mutate()
+  }
+
+  const onDeleteBalanceWarning = () => {
+    Snackbar.show({
+      text: 'Are you sure you want to delete this currency for this account?',
+      duration: Snackbar.LENGTH_LONG,
+      marginBottom: 20,
+      action: {
+        text: 'YES',
+        textColor: colors.error,
+        onPress: deleteBalance
+      }
+    })
+  }
+
+  const deleteBalance = () => {
+    if (!balance) return
+    deleteBalanceMutation.mutate({ id: balance?.id })
+  }
+
+  return (
+    <View style={spacing.pb20}>
+      <Text style={[sText.subtitle, spacing.ph20, spacing.mb10]}>
+        Actions:
+      </Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20]}>
+          <TouchableHighlight onPress={goToNewTransaction} underlayColor={colors.gray.medium} style={sButton.outline}>
+            <Text style={sButton.outlineText}>+ Transaction</Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={goToNewDebt} underlayColor={colors.gray.medium} style={sButton.outline}>
+            <Text style={sButton.outlineText}>+ Debt</Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={goToEditBalance} underlayColor={colors.gray.medium} style={sButton.outline}>
+            <Text style={sButton.outlineText}>Edit Balance</Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
+            <Text style={sButton.outlineText}>New Account</Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={goToNewCurrency} underlayColor={colors.gray.medium} style={sButton.outline}>
+            <Text style={sButton.outlineText}>New Currency</Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={onDeleteBalanceWarning} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
+            <Text style={[sButton.outlineText, sText.red]}>Delete Balance</Text>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={onDeleteAccountWarning} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
+            <Text style={[sButton.outlineText, sText.red]}>Delete Account</Text>
+          </TouchableHighlight>
+        </View>
+      </ScrollView>
+    </View>
+  )
+}
+
+function useData(props: Props) {
+  const { currencySelected } = useAuthState()
+  const accountId = props.route.params.accountId
+
+  const balanceQuery = useAccountBalanceQuery(accountId)
+  const balance = balanceQuery.data?.balances.find(b => b.currency === currencySelected) || balanceQuery.data?.balances[0]
+
+  const accountQuery = useAccountQuery(accountId)
+
+  const account = accountQuery.data?.account
+
+  const deleteAccountMutation = useAccountDeleteMutation(accountId, {
+    onSuccess: () => {
+      Snackbar.show({
+        text: 'Account Deleted',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 20
+      })
+      props.navigation.navigate('DashboardNoAccount')
+    }
+  })
+
+  const deleteBalanceMutation = useAccountBalanceDeleteMutation(accountId, {
+    onSuccess: () => {
+      Snackbar.show({
+        text: 'Balance Deleted',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 20
+      })
+      props.navigation.navigate('Dashboard', { accountId })
+    }
+  })
+
+  return {
+    accountId,
+    accountQuery,
+    balanceQuery,
+    balance,
+    account,
+    deleteAccountMutation,
+    deleteBalanceMutation
+  }
 }
