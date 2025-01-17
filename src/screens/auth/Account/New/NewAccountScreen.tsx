@@ -180,7 +180,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 Description
               </Text>
               <Text style={sButton.pillText}>
-                {methods.watch('description')}
+                {watch('description')}
               </Text>
             </Animated.View>
             <Animated.View style={[sButton.pill, { opacity: anim.pill.notes }]}>
@@ -188,7 +188,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 Notes
               </Text>
               <Text style={sButton.pillText}>
-                {methods.watch('notes') || 'No Notes'}
+                {watch('notes') || 'No Notes'}
               </Text>
             </Animated.View>
             <Animated.View style={[sButton.pill, { opacity: anim.pill.currency }]}>
@@ -196,7 +196,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 Currency
               </Text>
               <Text style={sButton.pillText}>
-                {methods.watch('currency')}
+                {watch('currency')}
               </Text>
             </Animated.View>
             <Animated.View style={[sButton.pill, { opacity: anim.pill.amount }]}>
@@ -204,7 +204,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 Balance
               </Text>
               <Text style={sButton.pillText}>
-                {methods.watch('amount')}
+                {watch('amount')}
               </Text>
             </Animated.View>
           </View>

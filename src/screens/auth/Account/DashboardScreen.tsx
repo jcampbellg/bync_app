@@ -184,6 +184,8 @@ function Actions(props: Props) {
   }
 
   const goToEditBalance = () => {
+    if (!balance) return
+    props.navigation.navigate('EditBalance', { accountId, balanceId: balance?.id })
   }
 
   const onDeleteAccountWarning = () => {

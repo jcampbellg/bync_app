@@ -11,6 +11,7 @@ import { colors } from '../utils/constants'
 import NewBalanceScreen from '../screens/auth/Account/New/NewBalanceScreen'
 import { useRoot } from '../screens/Root'
 import useAccountsQuery from '../apis/account/useAccountsQuery'
+import EditBalanceScreen from '../screens/auth/Account/Edit/EditBalanceScreen'
 
 export type AuthStackScreens = {
   Dashboard: {
@@ -25,6 +26,7 @@ export type AuthStackScreens = {
     cantGoBack?: boolean
   }
   NewBalance: { accountId: number }
+  EditBalance: { accountId: number, balanceId: number }
 }
 
 const AuthStack = createStackNavigator<AuthStackScreens>()
@@ -82,14 +84,16 @@ export default function AuthNavigation() {
           component={SelectAccountScreen}
         />
         <AuthStack.Screen
-          name='SelectBalance'
-          component={SelectBalanceScreen}
-          initialParams={{ accountId: defaultAccountId }}
-        />
-        <AuthStack.Screen
           name='NewBalance'
           component={NewBalanceScreen}
-          initialParams={{ accountId: defaultAccountId }}
+        />
+        <AuthStack.Screen
+          name='SelectBalance'
+          component={SelectBalanceScreen}
+        />
+        <AuthStack.Screen
+          name='EditBalance'
+          component={EditBalanceScreen}
         />
       </AuthStack.Navigator>
     </NavigationContainer>

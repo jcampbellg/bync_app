@@ -6,85 +6,57 @@ import { bg, sButton, sContainer, sInput, spacing, sText } from '../../../../uti
 import { colors } from '../../../../utils/constants'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { amountWith0Validation, symbolValidation } from '../../../../utils/validation'
+import { amountWith0Validation } from '../../../../utils/validation'
 import { Controller, useForm } from 'react-hook-form'
 import { useRef } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
 import useAccountBalanceMutation from '../../../../apis/account/useAccountBalanceMutation'
 import useAccountQuery from '../../../../apis/account/useAccountQuery'
+import useAccountBalancePatchMutation from '../../../../apis/account/useAccountBalancePatchMutation'
+import useAccountBalanceQuery from '../../../../apis/account/useAccountBalanceQuery'
 
 const schema = z.object({
-  currency: symbolValidation,
   amount: amountWith0Validation
 })
 
-type NewBalanceForm = z.infer<typeof schema>
+type EditBalanceForm = z.infer<typeof schema>
 
 const resolver = zodResolver(schema)
 
-export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStackScreens, 'NewBalance'>) {
+export default function EditBalanceScreen(props: NativeStackScreenProps<AuthStackScreens, 'EditBalance'>) {
   const accountId = props.route.params.accountId
+  const balanceId = props.route.params.balanceId
 
   const accountQuery = useAccountQuery(accountId)
+  const balanceQuery = useAccountBalanceQuery(accountId)
 
-  if (accountQuery.isLoading || !accountQuery.data) {
+  const balance = balanceQuery.data?.balances.find(b => b.id === balanceId)
+
+  if (accountQuery.isLoading || !accountQuery.data || balanceQuery.isLoading || !balanceQuery.data || !balance) {
     return null
   }
 
-  const anim = {
-    opacity: {
-      currency: useAnimatedValue(1),
-      amount: useAnimatedValue(0),
-    },
-    position: {
-      amount: useAnimatedValue(220),
-    }
-  }
-
-  const refs = {
-    currency: useRef<TextInput>(null),
-    amount: useRef<TextInput>(null),
-  }
-
-  const methods = useForm<NewBalanceForm>({
+  const methods = useForm<EditBalanceForm>({
     resolver,
-    mode: 'onChange'
-  })
-
-  const { control, formState: { errors }, handleSubmit, watch } = methods
-
-  const goToAmount = () => {
-    if (!!errors.currency || !watch('currency')) return
-
-    Animated.timing(anim.opacity.currency, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.amount, {
-      toValue: 80,
-      duration: 300,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.position.amount, {
-      toValue: 0,
-      duration: 300,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-
-    refs.amount.current?.focus()
-  }
-
-  const { mutate, isPending } = useAccountBalanceMutation(accountId, {
-    onSuccess: () => {
-      props.navigation.replace('Dashboard', { accountId })
+    mode: 'onChange',
+    defaultValues: {
+      amount: balance.amount
     }
   })
 
-  const onSubmit = handleSubmit((data: NewBalanceForm) => {
+  const { control, formState: { errors }, handleSubmit } = methods
+
+  const ids = {
+    accountId, balanceId
+  }
+
+  const { mutate, isPending } = useAccountBalancePatchMutation(ids, {
+    onSuccess: () => {
+      props.navigation.replace('Dashboard', { accountId, balanceId })
+    }
+  })
+
+  const onSubmit = handleSubmit((data: EditBalanceForm) => {
     mutate(data)
   })
 
@@ -98,7 +70,7 @@ export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStack
         <View style={[sContainer.rowBetween, spacing.p20]}>
           <TouchableOpacity disabled={isPending} onPress={goBack}>
             <Text style={sText.subtitle}>
-              ◀ New Balance
+              ◀ Edit Balance
             </Text>
           </TouchableOpacity>
         </View>
@@ -120,63 +92,30 @@ export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStack
                 {accountQuery.data.account.notes || 'No Notes'}
               </Text>
             </View>
+            <View style={[sButton.pill]}>
+              <Text style={sButton.pillLabel}>
+                Currency
+              </Text>
+              <Text style={sButton.pillText}>
+                {balance.currency}
+              </Text>
+            </View>
           </View>
         </ScrollView>
-        {/* Currency */}
-        <Animated.View style={[spacing.p20, {
+        <View style={[spacing.p20, {
           width: '100%',
-          opacity: anim.opacity.currency,
-          position: 'absolute',
-          top: 80
-        }]
-        }>
-          <Text style={[sText.bigNumber]}>
-            Currency
-          </Text>
-          <Controller
-            control={control}
-            name='currency'
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                ref={refs.currency}
-                value={value}
-                onChangeText={onChange}
-                style={sInput.line}
-                placeholderTextColor={colors.gray.hard}
-                autoCapitalize='characters'
-                maxLength={3}
-                placeholder='Three letter currency code'
-                enterKeyHint='next'
-                submitBehavior='submit'
-                onSubmitEditing={goToAmount}
-              />
-            )}
-          />
-          <Text style={[sText.subtitle]}>
-            You can add more currencies later
-          </Text>
-          <Text style={[sText.error, spacing.mt10]}>
-            {errors.currency?.message}
-          </Text>
-        </Animated.View>
-        {/* Inital Amount */}
-        <Animated.View style={[spacing.p20, {
-          width: '100%',
-          opacity: anim.opacity.amount,
           position: 'absolute',
           top: 80,
-          transform: [{ translateY: anim.position.amount }]
         }]
         }>
           <Text style={[sText.bigNumber]}>
-            Initial Balance
+            Balance
           </Text>
           <Controller
             control={control}
             name='amount'
             render={({ field: { onChange, value } }) => (
               <TextInput
-                ref={refs.amount}
                 value={value?.toString()}
                 onChangeText={onChange}
                 style={sInput.line}
@@ -196,11 +135,11 @@ export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStack
             <View style={[sContainer.rowCenter, spacing.gap10]}>
               {isPending && <ActivityIndicator size={24} color={colors.white} />}
               <Text style={sButton.filltextLarge}>
-                Create Currency
+                Save
               </Text>
             </View>
           </TouchableHighlight>
-        </Animated.View>
+        </View>
       </View>
     </KeyboardView>
   )
