@@ -6,24 +6,20 @@ import { bg, sButton, sContainer, sInput, spacing, sText } from '../../../../uti
 import { colors } from '../../../../utils/constants'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { amountWith0Validation, dateNumberValidation, descriptionValidation, notesValidation, symbolValidation } from '../../../../utils/validation'
+import { amountWith0Validation, descriptionValidation, notesValidation, symbolValidation } from '../../../../utils/validation'
 import { Controller, useForm } from 'react-hook-form'
 import { useRef } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
 import useAccountMutation from '../../../../apis/account/useAccountMutation'
-import { useAuthState } from '../../../../components/AuthStateProvider'
-import ToggleSwitch from '../../../../components/ui/ToggleSwitch'
 
 const schema = z.object({
   description: descriptionValidation,
   notes: notesValidation,
   currency: symbolValidation,
-  amount: amountWith0Validation,
-  startDate: dateNumberValidation,
-  isDefault: z.boolean()
+  amount: amountWith0Validation
 })
 
-export type NewAccountForm = z.infer<typeof schema>
+type NewAccountForm = z.infer<typeof schema>
 
 const resolver = zodResolver(schema)
 
@@ -33,27 +29,18 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
       description: useAnimatedValue(0),
       notes: useAnimatedValue(0),
       currency: useAnimatedValue(0),
-      amount: useAnimatedValue(0),
-      startDate: useAnimatedValue(0),
-      isDefault: useAnimatedValue(0),
-      loading: useAnimatedValue(0)
+      amount: useAnimatedValue(0)
     },
     opacity: {
       description: useAnimatedValue(1),
       notes: useAnimatedValue(0),
       currency: useAnimatedValue(0),
-      amount: useAnimatedValue(0),
-      startDate: useAnimatedValue(0),
-      isDefault: useAnimatedValue(0),
-      loading: useAnimatedValue(0)
+      amount: useAnimatedValue(0)
     },
     position: {
       notes: useAnimatedValue(220),
       currency: useAnimatedValue(220),
-      amount: useAnimatedValue(220),
-      startDate: useAnimatedValue(220),
-      isDefault: useAnimatedValue(220),
-      loading: useAnimatedValue(220)
+      amount: useAnimatedValue(220)
     }
   }
 
@@ -69,12 +56,10 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     mode: 'onChange'
   })
 
-  const { setState } = useAuthState()
-
-  const { control, formState: { errors }, handleSubmit } = methods
+  const { control, formState: { errors }, handleSubmit, watch } = methods
 
   const goToNotes = () => {
-    if (!!errors.description) return
+    if (!!errors.description || !watch('description')) return
 
     Animated.timing(anim.pill.description, {
       toValue: 1,
@@ -134,7 +119,7 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
   }
 
   const goToAmount = () => {
-    if (!!errors.currency) return
+    if (!!errors.currency || !watch('currency')) return
 
     Animated.timing(anim.pill.currency, {
       toValue: 1,
@@ -164,69 +149,9 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
     refs.amount.current?.focus()
   }
 
-  const goToStartDate = () => {
-    if (!!errors.amount) return
-
-    Animated.timing(anim.pill.amount, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.amount, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.startDate, {
-      toValue: 80,
-      duration: 300,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.position.startDate, {
-      toValue: 0,
-      duration: 300,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-
-    refs.startDate.current?.focus()
-  }
-
-  const goToIsDefault = () => {
-    if (!!errors.startDate) return
-
-    Animated.timing(anim.pill.startDate, {
-      toValue: 1,
-      duration: 200,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.startDate, {
-      toValue: 0,
-      duration: 200,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.opacity.isDefault, {
-      toValue: 80,
-      duration: 300,
-      easing: Easing.linear,
-      useNativeDriver: true,
-    }).start()
-    Animated.timing(anim.position.isDefault, {
-      toValue: 0,
-      duration: 300,
-      easing: Easing.cubic,
-      useNativeDriver: true,
-    }).start()
-  }
-
   const { mutate, isPending, isError, error } = useAccountMutation({
     onSuccess: ({ account }) => {
-      props.navigation.navigate('Dashboard', { accountId: account.id })
+      props.navigation.replace('Dashboard', { accountId: account.id })
     }
   })
 
@@ -280,14 +205,6 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
               </Text>
               <Text style={sButton.pillText}>
                 {methods.watch('amount')}
-              </Text>
-            </Animated.View>
-            <Animated.View style={[sButton.pill, { opacity: anim.pill.startDate }]}>
-              <Text style={sButton.pillLabel}>
-                Month Start
-              </Text>
-              <Text style={sButton.pillText}>
-                {methods.watch('startDate')}
               </Text>
             </Animated.View>
           </View>
@@ -416,73 +333,15 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
                 placeholderTextColor={colors.gray.hard}
                 keyboardType='number-pad'
                 placeholder='Type here...'
-                enterKeyHint='next'
-                submitBehavior='submit'
-                onSubmitEditing={goToStartDate}
+                enterKeyHint='done'
+                submitBehavior='blurAndSubmit'
+                onSubmitEditing={onSubmit}
               />
             )}
           />
           <Text style={[sText.error, spacing.mt10]}>
             {errors.amount?.message}
           </Text>
-        </Animated.View>
-        {/* Start Date */}
-        <Animated.View style={[spacing.p20, {
-          width: '100%',
-          opacity: anim.opacity.startDate,
-          position: 'absolute',
-          top: 80,
-          transform: [{ translateY: anim.position.startDate }]
-        }]
-        }>
-          <Text style={[sText.bigNumber]}>
-            Month Start
-          </Text>
-          <Controller
-            control={control}
-            name='startDate'
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                ref={refs.startDate}
-                value={value?.toString()}
-                onChangeText={onChange}
-                style={sInput.line}
-                placeholderTextColor={colors.gray.hard}
-                keyboardType='number-pad'
-                placeholder='1 - 31'
-                enterKeyHint='done'
-                submitBehavior='blurAndSubmit'
-                onSubmitEditing={goToIsDefault}
-              />
-            )}
-          />
-          <Text style={[sText.subtitle]}>
-            Data on the Dashboard will be displayed from this day of the month to the next
-          </Text>
-          <Text style={[sText.error, spacing.mt10]}>
-            {errors.startDate?.message}
-          </Text>
-        </Animated.View>
-        {/* Is Default */}
-        <Animated.View style={[spacing.p20, {
-          width: '100%',
-          opacity: anim.opacity.isDefault,
-          position: 'absolute',
-          top: 80,
-          transform: [{ translateY: anim.position.isDefault }]
-        }]
-        }>
-          <Text style={[sText.bigNumber]}>
-            Set as Default
-          </Text>
-          <Controller
-            control={control}
-            name='isDefault'
-            defaultValue={false}
-            render={({ field: { onChange, value } }) => (
-              <ToggleSwitch onChange={onChange} value={value} />
-            )}
-          />
           <TouchableHighlight onPress={onSubmit} underlayColor={colors.gray.hard} style={[sButton.fill, spacing.mt20]} disabled={isPending}>
             <View style={[sContainer.rowCenter, spacing.gap10]}>
               {isPending && <ActivityIndicator size={24} color={colors.white} />}
@@ -491,6 +350,13 @@ export default function NewAccountScreen(props: NativeStackScreenProps<AuthStack
               </Text>
             </View>
           </TouchableHighlight>
+          {
+            isError && (
+              <Text style={[sText.error, spacing.mt10]}>
+                {error?.message || 'An error occurred'}
+              </Text>
+            )
+          }
         </Animated.View>
       </View>
     </KeyboardView>

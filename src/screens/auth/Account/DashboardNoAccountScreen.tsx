@@ -2,27 +2,18 @@ import { Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthStackScreens } from '../../../components/AuthNavigation'
 import { sButton, sContainer, sGraph, spacing, sText } from '../../../utils/styles'
-import { useAuthState } from '../../../components/AuthStateProvider'
 import { colors } from '../../../utils/constants'
 import { ScrollView } from 'react-native-gesture-handler'
 
 type Props = NativeStackScreenProps<AuthStackScreens, 'DashboardNoAccount'>
 
 export default function DashboardNoAccountScreen(props: Props) {
-  const { setState, timespan } = useAuthState()
-
   const goToNewAccount = () => {
     props.navigation.navigate('NewAccount')
   }
 
   const goToSelectAccount = () => {
     props.navigation.navigate('SelectAccount')
-  }
-
-  const onTimespanChange = () => {
-    setState({
-      timespan: timespan === 'this month' ? 'last two months' : timespan === 'last two months' ? 'this year' : 'this month'
-    })
   }
 
   return (
@@ -34,32 +25,14 @@ export default function DashboardNoAccountScreen(props: Props) {
               No account selected ▼
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onTimespanChange}>
-            <Text style={sText.subtitle}>
-              {timespan} ▼
-            </Text>
-          </TouchableOpacity>
         </View>
-        <Balance {...props} />
+        <Balance />
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[sContainer.flex]}>
-        <View style={[sContainer.rowEnd, spacing.p20, spacing.gap10]}>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '100%' }]}>
-          </View>
-        </View>
-      </ScrollView>
+      <View style={[sContainer.center]}>
+        <Text style={sText.subtitle}>
+          No data to display
+        </Text>
+      </View>
       <View style={spacing.pb20}>
         <Text style={[sText.subtitle, spacing.ph20, spacing.mb10]}>
           Actions:
@@ -76,14 +49,7 @@ export default function DashboardNoAccountScreen(props: Props) {
   )
 }
 
-function Balance(props: NativeStackScreenProps<AuthStackScreens, 'DashboardNoAccount'>) {
-  const { setState, showBalance, timespan } = useAuthState()
-
-  const toggleBalance = () => {
-    setState({
-      showBalance: !showBalance
-    })
-  }
+function Balance() {
   return (
     <View>
       <View style={sContainer.rowCenter}>
@@ -94,11 +60,9 @@ function Balance(props: NativeStackScreenProps<AuthStackScreens, 'DashboardNoAcc
           N/A
         </Text>
       </View>
-      <TouchableOpacity onPress={toggleBalance} style={[spacing.p10]}>
-        <Text style={[sText.subtitle, sText.center]}>
-          {showBalance ? 'Balance ▼' : `Total ${timespan} ▼`}
-        </Text>
-      </TouchableOpacity>
+      <Text style={[sText.subtitle, sText.center]}>
+        Balance
+      </Text>
     </View>
   )
 }

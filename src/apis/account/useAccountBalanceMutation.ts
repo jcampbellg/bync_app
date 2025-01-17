@@ -1,16 +1,17 @@
 import { useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query'
 import { useRoot } from '../../screens/Root'
 import { Balance } from '../../utils/dbTypes'
-import { NewBalanceForm } from '../../screens/auth/Account/New/NewBalanceScreen'
 
-type QueryProps = Omit<UseMutationOptions<{ balance: Balance }, Error, NewBalanceForm>, 'queryKey' | 'queryFn'>
+type Params = Pick<Balance, 'currency' | 'amount'>
+
+type QueryProps = Omit<UseMutationOptions<{ balance: Balance }, Error, Params>, 'queryKey' | 'queryFn'>
 
 export default function useAccountBalanceMutation(id: number, { onSuccess, ...props }: QueryProps = {}) {
   const queryClient = useQueryClient()
   const { key, baseUrl } = useRoot()
 
   const query = useMutation({
-    mutationFn: async (params: NewBalanceForm) => {
+    mutationFn: async (params: Params) => {
       const url = baseUrl + `/api/account/${id}/balance`
 
       const response = await fetch(url, {

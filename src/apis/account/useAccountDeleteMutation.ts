@@ -4,7 +4,7 @@ import { Account } from '../../utils/dbTypes'
 
 type QueryProps = Omit<UseMutationOptions<{ account: Account }, Error>, 'queryKey' | 'queryFn'>
 
-export default function useAccountDeleteMutation(id: number, { onSuccess, ...props }: QueryProps = {}) {
+export default function useAccountDeleteMutation(id: number, { onSuccess, onError, onMutate, ...props }: QueryProps = {}) {
   const queryClient = useQueryClient()
   const { key, baseUrl } = useRoot()
 
@@ -29,7 +29,26 @@ export default function useAccountDeleteMutation(id: number, { onSuccess, ...pro
       return data
     },
     ...props,
+    onError: async (...args) => {
+      const context = args[2]
+      queryClient.setQueryData(['account'], context)
+
+      onError?.(...args)
+    },
+    onMutate: async (...args) => {
+      const dataBeforeMutation = queryClient.getQueryData(['account'])
+
+      queryClient.setQueryData(['account'], (prev: { accounts: Account[] }) => ({
+        accounts: prev.accounts.filter(a => a.id !== id)
+      }))
+      onMutate?.(...args)
+
+      return dataBeforeMutation
+    },
     onSuccess: async (...args) => {
+      queryClient.removeQueries({
+        queryKey: ['account', id]
+      })
       queryClient.invalidateQueries({
         queryKey: ['account']
       })

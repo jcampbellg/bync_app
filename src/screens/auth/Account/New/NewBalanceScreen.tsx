@@ -10,7 +10,6 @@ import { amountWith0Validation, symbolValidation } from '../../../../utils/valid
 import { Controller, useForm } from 'react-hook-form'
 import { useRef } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
-import { useAuthState } from '../../../../components/AuthStateProvider'
 import useAccountBalanceMutation from '../../../../apis/account/useAccountBalanceMutation'
 import useAccountQuery from '../../../../apis/account/useAccountQuery'
 
@@ -19,7 +18,7 @@ const schema = z.object({
   amount: amountWith0Validation
 })
 
-export type NewBalanceForm = z.infer<typeof schema>
+type NewBalanceForm = z.infer<typeof schema>
 
 const resolver = zodResolver(schema)
 
@@ -52,8 +51,6 @@ export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStack
     mode: 'onChange'
   })
 
-  const { setState } = useAuthState()
-
   const { control, formState: { errors }, handleSubmit } = methods
 
   const goToAmount = () => {
@@ -82,9 +79,8 @@ export default function NewBalanceScreen(props: NativeStackScreenProps<AuthStack
   }
 
   const { mutate, isPending } = useAccountBalanceMutation(accountId, {
-    onSuccess: ({ balance }) => {
-      setState({ currencySelected: balance.currency })
-      props.navigation.navigate('Dashboard', { accountId })
+    onSuccess: () => {
+      props.navigation.replace('Dashboard', { accountId })
     }
   })
 

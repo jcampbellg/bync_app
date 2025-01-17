@@ -1,16 +1,17 @@
 import { useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query'
 import { useRoot } from '../../screens/Root'
-import { Account } from '../../utils/dbTypes'
-import { NewAccountForm } from '../../screens/auth/NewAccountScreen'
+import { Account, Balance } from '../../utils/dbTypes'
 
-type QueryProps = Omit<UseMutationOptions<{ account: Account }, Error, NewAccountForm>, 'queryKey' | 'queryFn'>
+type Params = Pick<Account, 'description' | 'notes'> & Pick<Balance, 'currency' | 'amount'>
+
+type QueryProps = Omit<UseMutationOptions<{ account: Account }, Error, Params>, 'queryKey' | 'queryFn'>
 
 export default function useAccountMutation({ onSuccess, ...props }: QueryProps = {}) {
   const queryClient = useQueryClient()
   const { key, baseUrl } = useRoot()
 
   const query = useMutation({
-    mutationFn: async (params: NewAccountForm) => {
+    mutationFn: async (params: Params) => {
       const url = baseUrl + '/api/account'
 
       const response = await fetch(url, {

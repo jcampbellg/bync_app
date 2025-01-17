@@ -2,11 +2,7 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { useRoot } from '../../screens/Root'
 import { Account } from '../../utils/dbTypes'
 
-export type AccountGetData = {
-  account: Account
-}
-
-type QueryProps = Omit<UseQueryOptions<AccountGetData>, 'queryKey' | 'queryFn'>
+type QueryProps = Omit<UseQueryOptions<{ account: Account }>, 'queryKey' | 'queryFn'>
 
 export default function useAccountQuery(id: number, props: QueryProps = {}) {
   const { key, baseUrl, isLogin } = useRoot()

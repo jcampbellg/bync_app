@@ -2,23 +2,27 @@ import { useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react
 import { useRoot } from '../../screens/Root'
 import { Balance } from '../../utils/dbTypes'
 
-type QueryProps = Omit<UseMutationOptions<{ balance: Balance }, Error, { id: number }>, 'queryKey' | 'queryFn'>
+type Ids = {
+  accountId: number
+  balanceId: number
+}
 
-export default function useAccountBalanceDeleteMutation(id: number, { onSuccess, ...props }: QueryProps = {}) {
+type QueryProps = Omit<UseMutationOptions<{ balance: Balance }, Error>, 'queryKey' | 'queryFn'>
+
+export default function useAccountBalanceDeleteMutation({ accountId, balanceId }: Ids, { onSuccess, onMutate, onError, ...props }: QueryProps = {}) {
   const queryClient = useQueryClient()
   const { key, baseUrl } = useRoot()
 
   const query = useMutation({
-    mutationFn: async (params: { id: number }) => {
-      const url = baseUrl + `/api/account/${id}/balance`
+    mutationFn: async () => {
+      const url = baseUrl + `/api/account/${accountId}/balance/${balanceId}`
 
       const response = await fetch(url, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${key}`
-        },
-        body: JSON.stringify(params)
+        }
       })
 
       if (!response.ok) {
@@ -30,9 +34,28 @@ export default function useAccountBalanceDeleteMutation(id: number, { onSuccess,
       return data
     },
     ...props,
+    onError: async (...args) => {
+      const context = args[2]
+      queryClient.setQueryData(['account', accountId, 'balance'], context)
+
+      onError?.(...args)
+    },
+    onMutate: async (...args) => {
+      const dataBeforeMutation = queryClient.getQueryData(['account', accountId, 'balance'])
+
+      queryClient.setQueryData(['account', accountId, 'balance'], (prev: { balances: Balance[] }) => ({
+        balances: prev.balances.filter(b => b.id !== balanceId)
+      }))
+      onMutate?.(...args)
+
+      return dataBeforeMutation
+    },
     onSuccess: async (...args) => {
+      queryClient.removeQueries({
+        queryKey: ['account', accountId, 'balance', balanceId]
+      })
       queryClient.invalidateQueries({
-        queryKey: ['account', id, 'balance']
+        queryKey: ['account', accountId]
       })
       onSuccess?.(...args)
     },

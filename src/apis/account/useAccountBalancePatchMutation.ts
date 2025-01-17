@@ -1,18 +1,23 @@
 import { useMutation, UseMutationOptions, useQueryClient } from '@tanstack/react-query'
 import { useRoot } from '../../screens/Root'
-import { Account } from '../../utils/dbTypes'
+import { Account, Balance } from '../../utils/dbTypes'
 
-type Params = Partial<Account>
+type Ids = {
+  accountId: number
+  balanceId: number
+}
+
+type Params = Partial<Balance>
 
 type QueryProps = Omit<UseMutationOptions<{ account: Account }, Error, Params>, 'queryKey' | 'queryFn'>
 
-export default function useAccountPatchMutation(id: number, { onSuccess, ...props }: QueryProps = {}) {
+export default function useAccountBalancePatchMutation({ accountId, balanceId }: Ids, { onSuccess, ...props }: QueryProps = {}) {
   const queryClient = useQueryClient()
   const { key, baseUrl } = useRoot()
 
   const query = useMutation({
     mutationFn: async (params: Params) => {
-      const url = baseUrl + `/api/account/${id}`
+      const url = baseUrl + `/api/account/${accountId}/balance/${balanceId}`
 
       const response = await fetch(url, {
         method: 'PATCH',
@@ -25,7 +30,7 @@ export default function useAccountPatchMutation(id: number, { onSuccess, ...prop
 
       if (!response.ok) {
         const error = await response.json()
-        console.error(`error in useAccountPatchMutation:`, error)
+        console.error(`error in useAccountBalancePatchMutation:`, error)
         return Promise.reject(error)
       }
       const data = await response.json()
@@ -34,10 +39,7 @@ export default function useAccountPatchMutation(id: number, { onSuccess, ...prop
     ...props,
     onSuccess: async (...args) => {
       queryClient.invalidateQueries({
-        queryKey: ['account', id]
-      })
-      queryClient.invalidateQueries({
-        queryKey: ['account']
+        queryKey: ['account', accountId, 'balance']
       })
       onSuccess?.(...args)
     },

@@ -2,7 +2,6 @@ import { Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthStackScreens } from '../../../components/AuthNavigation'
 import { border, sButton, sContainer, sGraph, spacing, sText } from '../../../utils/styles'
-import { useAuthState } from '../../../components/AuthStateProvider'
 import { colors } from '../../../utils/constants'
 import { ScrollView } from 'react-native-gesture-handler'
 import Skeleton from '../../../components/ui/Skeleton'
@@ -12,22 +11,16 @@ import numbro from 'numbro'
 import useAccountQuery from '../../../apis/account/useAccountQuery'
 import useAccountBalanceQuery from '../../../apis/account/useAccountBalanceQuery'
 import FA5Icon from 'react-native-vector-icons/FontAwesome5'
-import dayts from '../../../utils/dayts'
 import useAccountBalanceDeleteMutation from '../../../apis/account/useAccountBalanceDeleteMutation'
 
 type Props = NativeStackScreenProps<AuthStackScreens, 'Dashboard'>
 
 export default function DashboardScreen(props: Props) {
-  const { timespan, setState } = useAuthState()
-
   const {
     account, accountQuery
   } = useData(props)
 
   const onTimespanChange = () => {
-    setState({
-      timespan: timespan === 'this month' ? 'last two months' : timespan === 'last two months' ? 'this year' : 'this month'
-    })
   }
 
   const goToSelectAccount = () => {
@@ -79,7 +72,7 @@ export default function DashboardScreen(props: Props) {
           </TouchableOpacity>
           <TouchableOpacity onPress={onTimespanChange}>
             <Text style={sText.subtitle}>
-              {timespan} ▼
+              Date ▼
             </Text>
           </TouchableOpacity>
         </View>
@@ -99,14 +92,6 @@ export default function DashboardScreen(props: Props) {
               </Text>
               <Text style={sButton.pillText}>
                 {account.notes || 'No Notes'}
-              </Text>
-            </View>
-            <View style={[sButton.pill]}>
-              <Text style={sButton.pillLabel}>
-                Month Start
-              </Text>
-              <Text style={sButton.pillText}>
-                {account.startDate}
               </Text>
             </View>
           </View>
@@ -137,8 +122,6 @@ export default function DashboardScreen(props: Props) {
 }
 
 function Balance(props: Props) {
-  const { setState, showBalance, timespan } = useAuthState()
-
   const {
     accountId, balance, account
   } = useData(props)
@@ -149,22 +132,11 @@ function Balance(props: Props) {
   }
 
   const toggleBalance = () => {
-    setState({
-      showBalance: !showBalance
-    })
   }
 
-  if (!account) return null
+  if (!account || !balance) return null
 
   const isExpense = balance?.amount !== undefined && balance.amount < 0
-
-  const monthStart = account.startDate
-
-  if (!monthStart) return null
-
-  const todayD = parseInt(dayts().format('D'))
-
-  const timespanThisMonth = `from ${todayD > monthStart - 1 ? dayts().format('MMM') : dayts().subtract(1, 'month').format('MMM')} ${monthStart} to date`
 
   return (
     <View>
@@ -174,18 +146,18 @@ function Balance(props: Props) {
         }
         <Text style={[sText.bigNumber]}>
           {
-            balance?.amount !== undefined ? numbro(Math.abs(balance.amount)).format({ thousandSeparated: true, mantissa: 2 }) : 'N/A'
+            balance.amount !== undefined ? numbro(Math.abs(balance.amount)).format({ thousandSeparated: true, mantissa: 2 }) : 'N/A'
           }
         </Text>
         <TouchableOpacity onPress={goToCurrency}>
           <Text style={sText.subtitle}>
-            {balance?.currency} ▼
+            {balance.currency} ▼
           </Text>
         </TouchableOpacity>
       </View>
       <TouchableOpacity onPress={toggleBalance} style={[spacing.p10]}>
         <Text style={[sText.subtitle, sText.center]}>
-          {showBalance ? 'Balance ▼' : `Total ${timespan === 'this month' ? timespanThisMonth : timespan} ▼`}
+          Balance ▼
         </Text>
       </TouchableOpacity>
     </View>
@@ -201,7 +173,7 @@ function Actions(props: Props) {
     props.navigation.navigate('NewAccount')
   }
 
-  const goToNewCurrency = () => {
+  const goToNewBalance = () => {
     props.navigation.navigate('NewBalance', { accountId })
   }
 
@@ -246,7 +218,7 @@ function Actions(props: Props) {
 
   const deleteBalance = () => {
     if (!balance) return
-    deleteBalanceMutation.mutate({ id: balance?.id })
+    deleteBalanceMutation.mutate()
   }
 
   return (
@@ -268,8 +240,8 @@ function Actions(props: Props) {
           <TouchableHighlight onPress={goToNewAccount} underlayColor={colors.gray.medium} style={sButton.outline}>
             <Text style={sButton.outlineText}>New Account</Text>
           </TouchableHighlight>
-          <TouchableHighlight onPress={goToNewCurrency} underlayColor={colors.gray.medium} style={sButton.outline}>
-            <Text style={sButton.outlineText}>New Currency</Text>
+          <TouchableHighlight onPress={goToNewBalance} underlayColor={colors.gray.medium} style={sButton.outline}>
+            <Text style={sButton.outlineText}>New Balance</Text>
           </TouchableHighlight>
           <TouchableHighlight onPress={onDeleteBalanceWarning} underlayColor={colors.gray.medium} style={[sButton.outline, border.red]}>
             <Text style={[sButton.outlineText, sText.red]}>Delete Balance</Text>
@@ -284,35 +256,53 @@ function Actions(props: Props) {
 }
 
 function useData(props: Props) {
-  const { currencySelected } = useAuthState()
   const accountId = props.route.params.accountId
+  const balanceId = props.route.params.balanceId
 
   const balanceQuery = useAccountBalanceQuery(accountId)
-  const balance = balanceQuery.data?.balances.find(b => b.currency === currencySelected) || balanceQuery.data?.balances[0]
+  const balance = (balanceId ? balanceQuery.data?.balances.find(b => balanceId === b.id) : balanceQuery.data?.balances.find(b => b.isSelected)) || balanceQuery.data?.balances[0]
 
   const accountQuery = useAccountQuery(accountId)
 
   const account = accountQuery.data?.account
 
   const deleteAccountMutation = useAccountDeleteMutation(accountId, {
+    onMutate: () => {
+      props.navigation.replace('SelectAccount', { cantGoBack: true })
+    },
     onSuccess: () => {
       Snackbar.show({
         text: 'Account Deleted',
         duration: Snackbar.LENGTH_SHORT,
         marginBottom: 20
       })
-      props.navigation.navigate('DashboardNoAccount')
+    },
+    onError: (err) => {
+      Snackbar.show({
+        text: err?.message || 'Error deleting account',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 20
+      })
     }
   })
 
-  const deleteBalanceMutation = useAccountBalanceDeleteMutation(accountId, {
+  const deleteBalanceMutation = useAccountBalanceDeleteMutation({ accountId: accountId, balanceId: balance?.id || 0 }, {
+    onMutate: () => {
+      props.navigation.replace('SelectBalance', { accountId, cantGoBack: true })
+    },
     onSuccess: () => {
       Snackbar.show({
         text: 'Balance Deleted',
         duration: Snackbar.LENGTH_SHORT,
         marginBottom: 20
       })
-      props.navigation.navigate('Dashboard', { accountId })
+    },
+    onError: (err) => {
+      Snackbar.show({
+        text: err?.message || 'Error deleting balance',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 20
+      })
     }
   })
 
