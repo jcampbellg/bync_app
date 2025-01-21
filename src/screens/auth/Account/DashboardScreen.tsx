@@ -1,7 +1,7 @@
 import { Text, TouchableHighlight, TouchableOpacity, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { AuthStackScreens } from '../../../components/AuthNavigation'
-import { border, sButton, sContainer, sGraph, spacing, sText } from '../../../utils/styles'
+import { bg, border, sButton, sContainer, sGraph, spacing, sText } from '../../../utils/styles'
 import { colors } from '../../../utils/constants'
 import { ScrollView } from 'react-native-gesture-handler'
 import Skeleton from '../../../components/ui/Skeleton'
@@ -13,67 +13,75 @@ import useAccountBalanceQuery from '../../../apis/account/useAccountBalanceQuery
 import FA5Icon from 'react-native-vector-icons/FontAwesome5'
 import useAccountBalanceDeleteMutation from '../../../apis/account/useAccountBalanceDeleteMutation'
 
-type Props = NativeStackScreenProps<AuthStackScreens, 'Dashboard'>
+type ScreenProps = NativeStackScreenProps<AuthStackScreens, 'Dashboard'>
 
-export default function DashboardScreen(props: Props) {
-  const {
-    account, accountQuery
-  } = useData(props)
+export default function DashboardScreen(props: ScreenProps) {
+  const dataProps = useData(props)
+
+  return (
+    <View style={[sContainer.flexWhite]}>
+      <Details {...props} {...dataProps} />
+      <TransactionsList {...props} {...dataProps} />
+      <Actions {...props} {...dataProps} />
+    </View>
+  )
+}
+
+type ComponentProps = ScreenProps & ReturnType<typeof useData>
+
+function TransactionsList(props: ComponentProps) {
+
+  return (
+    <ScrollView showsHorizontalScrollIndicator={false} style={[sContainer.flexWhite]}>
+      <View style={[sContainer.flexWhite, spacing.gap10, spacing.p20]}>
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+        <View style={[bg.gray, { height: 20 }]} />
+      </View>
+    </ScrollView>
+  )
+}
+
+function Details(props: ComponentProps) {
+  const { account, navigation } = props
 
   const onTimespanChange = () => {
   }
 
   const goToSelectAccount = () => {
-    props.navigation.navigate('SelectAccount')
+    navigation.navigate('SelectAccount')
   }
 
-  if (accountQuery.isLoading || !account) {
+  if (!account) {
     return (
-      <View style={[sContainer.flexWhite]}>
-        <View>
-          <View style={[sContainer.rowBetween, spacing.p20, spacing.gap20]}>
-            <Skeleton delay={100} style={{ height: 14, flex: 1 }} />
-            <Skeleton delay={100} style={{ height: 14, flex: 1 }} />
-          </View>
-          <View style={[sContainer.rowBetween, spacing.p20, spacing.gap20]}>
-            <Skeleton delay={200} style={{ height: 40, width: 100 }} />
-            <Skeleton delay={200} style={{ height: 40, width: 100 }} />
-            <Skeleton delay={200} style={{ height: 40, width: 100 }} />
-          </View>
-          <View style={sContainer.rowCenter}>
-            <Skeleton delay={300} style={{ height: 48, width: 100 }} />
-          </View>
-        </View>
-        <View style={[sContainer.rowEnd, sContainer.flex, spacing.p20, spacing.gap10]}>
-          <Skeleton delay={400} style={{ height: '100%', flex: 1 }} />
-          <Skeleton delay={400} style={{ height: '90%', flex: 1 }} />
-          <Skeleton delay={400} style={{ height: '50%', flex: 1 }} />
-        </View>
-        <View style={[spacing.ph20]}>
-          <Skeleton delay={400} style={{ height: 14, width: 100 }} />
-          <View style={[sContainer.rowBetween, spacing.gap10, spacing.pv20]}>
-            <Skeleton delay={500} style={{ height: 40, width: 120 }} />
-            <Skeleton delay={600} style={{ height: 40, width: 100 }} />
-            <Skeleton delay={700} style={{ height: 40, width: 80 }} />
-          </View>
-        </View>
-      </View>
-    )
-  }
-
-  return (
-    <View style={[sContainer.flexWhite]}>
       <View>
         <View style={[sContainer.rowBetween, spacing.p20]}>
           <View style={[sContainer.rowCenter, spacing.gap20]}>
-            <TouchableOpacity onPress={goToSelectAccount}>
-              <FA5Icon name='bell' solid color={colors.black} size={16} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={goToSelectAccount}>
-              <Text style={sText.subtitle}>
-                {account.description} ▼
-              </Text>
-            </TouchableOpacity>
+            <FA5Icon name='bell' solid color={colors.black} size={16} />
+            <Skeleton delay={0} style={{ height: 13, width: 200 }} />
           </View>
           <TouchableOpacity onPress={onTimespanChange}>
             <Text style={sText.subtitle}>
@@ -81,52 +89,60 @@ export default function DashboardScreen(props: Props) {
             </Text>
           </TouchableOpacity>
         </View>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20, spacing.pb20]}>
-            <View style={[sButton.pill]}>
-              <Text style={sButton.pillLabel}>
-                Description
-              </Text>
-              <Text style={sButton.pillText}>
-                {account.description}
-              </Text>
-            </View>
-            <View style={[sButton.pill]}>
-              <Text style={sButton.pillLabel}>
-                Notes
-              </Text>
-              <Text style={sButton.pillText}>
-                {account.notes || 'No Notes'}
-              </Text>
-            </View>
-          </View>
-        </ScrollView>
+        <View style={[sContainer.row, spacing.gap10, spacing.p20, { marginBottom: 15 }]}>
+          <Skeleton delay={0} style={{ height: 34, width: 80, marginVertical: 7 }} />
+          <Skeleton delay={0} style={{ height: 34, width: 60, marginVertical: 7 }} />
+        </View>
         <Balance {...props} />
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={[sContainer.flex]}>
-        <View style={[sContainer.rowEnd, spacing.p20, spacing.gap10]}>
-          <View style={[sGraph.bar, { height: '50%' }]}>
+    )
+  }
+
+  return (
+    <View>
+      <View style={[sContainer.rowBetween, spacing.p20]}>
+        <View style={[sContainer.rowCenter, spacing.gap20]}>
+          <TouchableOpacity onPress={goToSelectAccount}>
+            <FA5Icon name='bell' solid color={colors.black} size={16} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={goToSelectAccount}>
+            <Text style={sText.subtitle}>
+              {account.description} ▼
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={onTimespanChange}>
+          <Text style={sText.subtitle}>
+            12 JUN - 12 JUL ▼
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+        <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20, spacing.pb20]}>
+          <View style={[sButton.pill]}>
+            <Text style={sButton.pillLabel}>
+              Description
+            </Text>
+            <Text style={sButton.pillText}>
+              {account.description}
+            </Text>
           </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '50%' }]}>
-          </View>
-          <View style={[sGraph.bar, { height: '100%' }]}>
+          <View style={[sButton.pill]}>
+            <Text style={sButton.pillLabel}>
+              Notes
+            </Text>
+            <Text style={sButton.pillText}>
+              {account.notes || 'No Notes'}
+            </Text>
           </View>
         </View>
       </ScrollView>
-      <Actions {...props} />
+      <Balance {...props} />
     </View>
   )
 }
 
-function Balance(props: Props) {
+function Balance(props: ComponentProps) {
   const {
     accountId, balance, account
   } = useData(props)
@@ -139,7 +155,18 @@ function Balance(props: Props) {
   const toggleBalance = () => {
   }
 
-  if (!account || !balance) return null
+  if (!account || !balance) {
+    return (
+      <View>
+        <View style={sContainer.rowCenter}>
+          <Skeleton delay={300} style={{ height: 50, width: 100, margin: 7 }} />
+        </View>
+        <Text style={[sText.subtitle, sText.center]}>
+          Balance
+        </Text>
+      </View>
+    )
+  }
 
   const isExpense = balance?.amount !== undefined && balance.amount < 0
 
@@ -169,10 +196,12 @@ function Balance(props: Props) {
   )
 }
 
-function Actions(props: Props) {
-  const {
-    accountId, balance, deleteAccountMutation, deleteBalanceMutation
-  } = useData(props)
+function Actions(props: ComponentProps) {
+  const { accountId, balance, deleteAccountMutation, deleteBalanceMutation, account } = props
+
+  if (!balance || !account) {
+    return null
+  }
 
   const goToNewAccount = () => {
     props.navigation.navigate('NewAccount')
@@ -269,7 +298,7 @@ function Actions(props: Props) {
   )
 }
 
-function useData(props: Props) {
+function useData(props: ScreenProps) {
   const accountId = props.route.params.accountId
   const balanceId = props.route.params.balanceId
 

@@ -13,6 +13,7 @@ import { useRoot } from '../screens/Root'
 import useAccountsQuery from '../apis/account/useAccountsQuery'
 import EditBalanceScreen from '../screens/auth/Account/Edit/EditBalanceScreen'
 import NewTransactionScreen from '../screens/auth/Account/Transaction/New/NewTransactionScreen'
+import TransactionDetailsScreen from '../screens/auth/Account/Transaction/TransactionDetailsScreen'
 
 export type AuthStackScreens = {
   Dashboard: {
@@ -29,7 +30,7 @@ export type AuthStackScreens = {
   NewBalance: { accountId: number }
   EditBalance: { accountId: number, balanceId: number }
   NewTransaction: { accountId: number, currency: string, isDebt: boolean }
-  TransactionDetails: { transactionId: number }
+  TransactionDetails: { accountId: number, transactionId: number }
 }
 
 const AuthStack = createStackNavigator<AuthStackScreens>()
@@ -101,6 +102,10 @@ export default function AuthNavigation() {
         <AuthStack.Screen
           name='NewTransaction'
           component={NewTransactionScreen}
+        />
+        <AuthStack.Screen
+          name='TransactionDetails'
+          component={TransactionDetailsScreen}
         />
       </AuthStack.Navigator>
     </NavigationContainer>

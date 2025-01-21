@@ -4,16 +4,18 @@ import { Transaction } from '../../../utils/dbTypes'
 
 type QueryProps = Omit<UseQueryOptions<{ transaction: Transaction }>, 'queryKey' | 'queryFn'>
 
-export default function useTransactionQuery(id: number, props: QueryProps = {}) {
+type Ids = {
+  accountId: number
+  transactionId: number
+}
+
+export default function useTransactionQuery({ accountId, transactionId }: Ids, props: QueryProps = {}) {
   const { key, baseUrl, isLogin } = useRoot()
 
   const query = useQuery({
-    queryKey: ['account', id, 'balance'],
+    queryKey: ['account', accountId, 'transaction', transactionId],
     queryFn: async () => {
-      if (id === null) {
-        return Promise.resolve({ account: null })
-      }
-      const url = baseUrl + `/api/account/${id}/transaction`
+      const url = baseUrl + `/api/account/${accountId}/transaction/${transactionId}`
 
       const response = await fetch(url, {
         method: 'GET',

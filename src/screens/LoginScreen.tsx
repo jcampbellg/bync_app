@@ -1,4 +1,4 @@
-import { sButton, sContainer, sInput, sText } from '../utils/styles'
+import { sButton, sContainer, sInput, spacing, sText } from '../utils/styles'
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableHighlight } from 'react-native'
 import EntypoIcon from 'react-native-vector-icons/Entypo'
@@ -22,10 +22,10 @@ export default function LoginScreen() {
     <View style={sContainer.flexBlack}>
       <View style={sContainer.centerBlack}>
         <EntypoIcon name='wallet' size={100} color={colors.white} />
-        <Text style={sText.titleWhite}>BYNC App</Text>
+        <Text style={[sText.titleWhite, spacing.mv20]}>BYNC App</Text>
       </View>
       <View style={sContainer.loginForm}>
-        <Text style={sText.title}>Login</Text>
+        <Text style={[sText.title, spacing.mv20]}>Login</Text>
         <Text style={sText.label}>Base URL</Text>
         <TextInput
           value={baseUrl}

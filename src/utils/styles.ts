@@ -172,15 +172,31 @@ export const sButton = StyleSheet.create({
 })
 
 export const sText = StyleSheet.create({
+  opacity: {
+    opacity: 0.7
+  },
   center: {
     textAlign: 'center',
+    fontFamily: 'Roboto'
+  },
+  left: {
+    textAlign: 'left',
+    fontFamily: 'Roboto'
+  },
+  right: {
+    textAlign: 'right',
     fontFamily: 'Roboto'
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: colors.black,
-    marginVertical: 20,
+    fontFamily: 'Roboto'
+  },
+  info: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: colors.black,
     fontFamily: 'Roboto'
   },
   subtitle: {
@@ -193,7 +209,6 @@ export const sText = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: colors.white,
-    marginVertical: 20,
     fontFamily: 'Roboto'
   },
   subtitleWhite: {
@@ -283,6 +298,9 @@ export const spacing = StyleSheet.create({
   },
   mt20: {
     marginTop: 20
+  },
+  mv20: {
+    marginVertical: 20
   },
   mb10: {
     marginBottom: 10

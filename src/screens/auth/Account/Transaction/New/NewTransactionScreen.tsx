@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View, TextInput, Animated, useAnimatedValue, Easing, ActivityIndicator, TouchableHighlight } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { sButton, sContainer, sInput, spacing, sText } from '../../../../../utils/styles'
+import { bg, sButton, sContainer, sInput, spacing, sText } from '../../../../../utils/styles'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm, UseFormReturn, UseFormWatch } from 'react-hook-form'
@@ -12,6 +12,7 @@ import { colors } from '../../../../../utils/constants'
 import { useShallowEffect } from '@mantine/hooks'
 import useAccountQuery from '../../../../../apis/account/useAccountQuery'
 import { ScrollView } from 'react-native-gesture-handler'
+import KeyboardView from '../../../../../components/KeyboardView'
 
 const schema = z.object({
   description: descriptionValidation,
@@ -71,11 +72,12 @@ export default function NewTransactionScreen(props: ScreenProps) {
     mode: 'onChange'
   })
 
-  const { watch } = methods
-
   const mutation = useTransactionMutation(accountId, {
     onSuccess: ({ transaction }) => {
-      props.navigation.replace('TransactionDetails', { transactionId: transaction.id })
+      props.navigation.replace('TransactionDetails', {
+        accountId: accountId,
+        transactionId: transaction.id
+      })
     }
   })
 
@@ -91,19 +93,21 @@ export default function NewTransactionScreen(props: ScreenProps) {
   }
 
   return (
-    <View style={sContainer.flexWhite}>
-      <View style={[sContainer.rowBetween, spacing.p20]}>
-        <TouchableOpacity disabled={mutation.isPending} onPress={goBack}>
-          <Text style={sText.subtitle}>
-            ◀ New {isDebt ? 'Debt' : 'Transaction'}
-          </Text>
-        </TouchableOpacity>
+    <ScrollView style={[sContainer.flexWhite]}>
+      <View style={sContainer.flexWhite}>
+        <View style={[sContainer.rowBetween, spacing.p20]}>
+          <TouchableOpacity disabled={mutation.isPending} onPress={goBack}>
+            <Text style={sText.subtitle}>
+              ◀ New {isDebt ? 'Debt' : 'Transaction'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Pills {...fieldProps} {...props} />
+        <Description {...fieldProps} {...props} />
+        <Notes {...fieldProps} {...props} />
+        <Amount {...fieldProps} {...props} />
       </View>
-      <Pills {...fieldProps} {...props} />
-      <Description {...fieldProps} {...props} />
-      <Notes {...fieldProps} {...props} />
-      <Amount {...fieldProps} {...props} />
-    </View>
+    </ScrollView>
   )
 }
 
@@ -115,6 +119,7 @@ type FieldProps = UseFormReturn<NewTransactionForm> & {
 
 function Description({ anim, refs, control, formState: { errors }, watch }: FieldProps) {
   useShallowEffect(() => {
+    console.log('Description effect')
     refs.description.current?.focus()
   }, [{ a: 1 }])
 
@@ -235,7 +240,7 @@ function Notes({ anim, refs, control, formState: { errors }, watch }: FieldProps
             style={sInput.line}
             placeholderTextColor={colors.gray.hard}
             onSubmitEditing={next}
-            placeholder='Type here...'
+            placeholder='(Optional) Type here...'
             enterKeyHint='next'
             submitBehavior='submit'
           />
@@ -265,10 +270,10 @@ function Amount({ anim, refs, control, formState: { errors }, handleSubmit, muta
   return (
     <Animated.View style={[spacing.p20, {
       width: '100%',
-      opacity: anim.opacity.notes,
+      opacity: anim.opacity.amount,
       position: 'absolute',
       top: 80,
-      transform: [{ translateY: anim.position.notes }]
+      transform: [{ translateY: anim.position.amount }]
     }]}>
       <Text style={[sText.bigNumber]}>
         Amount
@@ -278,14 +283,15 @@ function Amount({ anim, refs, control, formState: { errors }, handleSubmit, muta
         name='amount'
         render={({ field: { onChange, value } }) => (
           <TextInput
-            ref={refs.notes}
-            value={value.toString()}
+            ref={refs.amount}
+            value={value?.toString() || ''}
             onChangeText={onChange}
             style={sInput.line}
             placeholderTextColor={colors.gray.hard}
             onSubmitEditing={onSubmit}
             placeholder='Type here...'
             enterKeyHint='done'
+            keyboardType='number-pad'
             submitBehavior='blurAndSubmit'
           />
         )}
@@ -350,7 +356,7 @@ function Pills({ watch, anim: { pill }, route }: FieldProps) {
             Notes
           </Text>
           <Text style={sButton.pillText}>
-            {watch('notes')}
+            {watch('notes') || 'No Notes'}
           </Text>
         </Animated.View>
       </View>
