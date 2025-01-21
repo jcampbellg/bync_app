@@ -65,14 +65,19 @@ export default function DashboardScreen(props: Props) {
     <View style={[sContainer.flexWhite]}>
       <View>
         <View style={[sContainer.rowBetween, spacing.p20]}>
-          <TouchableOpacity onPress={goToSelectAccount}>
-            <Text style={sText.subtitle}>
-              {account.description} ▼
-            </Text>
-          </TouchableOpacity>
+          <View style={[sContainer.rowCenter, spacing.gap20]}>
+            <TouchableOpacity onPress={goToSelectAccount}>
+              <FA5Icon name='bell' solid color={colors.black} size={16} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={goToSelectAccount}>
+              <Text style={sText.subtitle}>
+                {account.description} ▼
+              </Text>
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity onPress={onTimespanChange}>
             <Text style={sText.subtitle}>
-              Date ▼
+              12 JUN - 12 JUL ▼
             </Text>
           </TouchableOpacity>
         </View>
@@ -142,7 +147,7 @@ function Balance(props: Props) {
     <View>
       <View style={sContainer.rowCenter}>
         {
-          isExpense ? <FA5Icon name='minus-circle' color={colors.expense} size={16} /> : <FA5Icon name='plus-circle' color={colors.income} size={16} />
+          isExpense ? <FA5Icon name='minus-circle' solid color={colors.expense} size={16} /> : <FA5Icon name='plus-circle' solid color={colors.income} size={16} />
         }
         <Text style={[sText.bigNumber]}>
           {
@@ -178,9 +183,13 @@ function Actions(props: Props) {
   }
 
   const goToNewTransaction = () => {
+    if (!balance) return
+    props.navigation.navigate('NewTransaction', { accountId, currency: balance.currency, isDebt: false })
   }
 
   const goToNewDebt = () => {
+    if (!balance) return
+    props.navigation.navigate('NewTransaction', { accountId, currency: balance.currency, isDebt: true })
   }
 
   const goToEditBalance = () => {
@@ -230,6 +239,9 @@ function Actions(props: Props) {
       </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={[sContainer.rowBetween, spacing.gap10, spacing.ph20]}>
+          <TouchableOpacity onPress={() => { }}>
+            <FA5Icon name='bars' color={colors.black} size={22} />
+          </TouchableOpacity>
           <TouchableHighlight onPress={goToNewTransaction} underlayColor={colors.gray.medium} style={sButton.outline}>
             <Text style={sButton.outlineText}>+ Transaction</Text>
           </TouchableHighlight>

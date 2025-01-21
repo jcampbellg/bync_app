@@ -1,10 +1,10 @@
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-import { useRoot } from '../../screens/Root'
-import { Balance } from '../../utils/dbTypes'
+import { useRoot } from '../../../screens/Root'
+import { Transaction } from '../../../utils/dbTypes'
 
-type QueryProps = Omit<UseQueryOptions<{ balances: Balance[] }>, 'queryKey' | 'queryFn'>
+type QueryProps = Omit<UseQueryOptions<{ transaction: Transaction }>, 'queryKey' | 'queryFn'>
 
-export default function useAccountBalanceQuery(id: number, props: QueryProps = {}) {
+export default function useTransactionQuery(id: number, props: QueryProps = {}) {
   const { key, baseUrl, isLogin } = useRoot()
 
   const query = useQuery({
@@ -13,7 +13,7 @@ export default function useAccountBalanceQuery(id: number, props: QueryProps = {
       if (id === null) {
         return Promise.resolve({ account: null })
       }
-      const url = baseUrl + `/api/account/${id}/balance`
+      const url = baseUrl + `/api/account/${id}/transaction`
 
       const response = await fetch(url, {
         method: 'GET',
@@ -25,7 +25,7 @@ export default function useAccountBalanceQuery(id: number, props: QueryProps = {
 
       if (!response.ok) {
         const error = await response.json()
-        console.error(`error in useAccountBalanceQuery`, error)
+        console.error(`error in useTransactionQuery`, error)
         return Promise.reject(error)
       }
       const data = await response.json()
